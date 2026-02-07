@@ -13,6 +13,10 @@ import { openAiChannel } from "./channels/openai";
 import { anthropicChannel } from "./channels/anthropic";
 import { discordChannel } from "./channels/discord";
 import { slackChannel } from "./channels/slack";
+import { whatsappChannel } from "./channels/whatsapp";
+import { whatsappTriggerChannel } from "./channels/whatsapp-trigger";
+import { telegramChannel } from "./channels/telegram";
+import { telegramTriggerChannel } from "./channels/telegram-trigger";
 
 export const executeWorkflow = inngest.createFunction(
     {
@@ -41,6 +45,10 @@ export const executeWorkflow = inngest.createFunction(
             anthropicChannel(),
             discordChannel(),
             slackChannel(),
+            whatsappChannel(),
+            whatsappTriggerChannel(),
+            telegramChannel(),
+            telegramTriggerChannel(),
         ],
     },
     async ({ event, step, publish }) => {

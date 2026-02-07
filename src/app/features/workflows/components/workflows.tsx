@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { Component, type ErrorInfo, type ReactNode } from "react";
 import { EmptyView, EntityContainer, EntityHeader, EntityItem, EntityList, EntityPagination, EntitySearch, ErrorView, LoadingView } from "@/components/entity-components";
-import { useCreateWorkflow, useRemoveWorkflow, useSuspenseWorkflows } from "../hooks/use-workflows"
+import { useCreateWorkflow, useRemoveWorkflow, useSuspenseWorkflows, useWorkflows } from "../hooks/use-workflows"
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 import { useRouter } from "next/navigation";
 import { useWorkflowParams } from "../hooks/use-workflows-params";
@@ -10,10 +10,42 @@ import { useEntitySearch } from "@/hooks/use-entity-search";
 import { formatDistanceToNow } from "date-fns";
 import type { Workflow } from "@/generated/prisma";
 import { WorkflowIcon } from "lucide-react";
+import { WorkflowUsageDisplay } from "./workflow-usage-display";
+
+// Class-based error boundary to catch errors during SSR
+interface ErrorBoundaryProps {
+    children: ReactNode;
+}
+
+interface ErrorBoundaryState {
+    hasError: boolean;
+}
+
+export class WorkflowListErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+    constructor(props: ErrorBoundaryProps) {
+        super(props);
+        this.state = { hasError: false };
+    }
+
+    static getDerivedStateFromError(): ErrorBoundaryState {
+        return { hasError: true };
+    }
+
+    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+        console.error('WorkflowList error:', error, errorInfo);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return <WorkflowsError />;
+        }
+        return this.props.children;
+    }
+}
 
 export const WorkflowsSearch = () => {
     const [params, setParams] = useWorkflowParams();
-    const {searchValue, onSearchChange} = useEntitySearch({
+    const { searchValue, onSearchChange } = useEntitySearch({
         params,
         setParams,
     });
@@ -24,11 +56,19 @@ export const WorkflowsSearch = () => {
 }
 
 export const WorkflowList = () => {
-    const workflows = useSuspenseWorkflows();
+    const { data: workflows, isLoading, isError } = useWorkflows();
+
+    if (isLoading) {
+        return <WorkflowsLoading />;
+    }
+
+    if (isError || !workflows) {
+        return <WorkflowsError />;
+    }
 
     return (
-        <EntityList 
-            items={workflows.data.items}
+        <EntityList
+            items={workflows.items}
             getKey={(workflow) => workflow.id}
             renderItem={(workflow) => <WorkFlowItem data={workflow} />}
             emptyView={<WorkFlowsEmpty />}
@@ -36,7 +76,7 @@ export const WorkflowList = () => {
     )
 };
 
-export const WorkflowsHeader = ({ disabled }: {disabled?: boolean}) => {
+export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
     const createWorkflow = useCreateWorkflow();
     const router = useRouter()
     const { handleError, modal } = useUpgradeModal();
@@ -55,9 +95,9 @@ export const WorkflowsHeader = ({ disabled }: {disabled?: boolean}) => {
     return (
         <>
             {modal}
-            <EntityHeader 
-                title="Workflows" 
-                description="Create and manage your workflows" 
+            <EntityHeader
+                title="Workflows"
+                description="Create and manage your workflows"
                 onNew={handleCreate}
                 newButtonLabel="New workflow"
                 disabeled={disabled}
@@ -68,15 +108,19 @@ export const WorkflowsHeader = ({ disabled }: {disabled?: boolean}) => {
 };
 
 export const WorkflowsPagination = () => {
-    const worklflows = useSuspenseWorkflows();
+    const { data: workflows, isFetching } = useWorkflows();
     const [params, setParams] = useWorkflowParams();
 
+    if (!workflows) {
+        return null;
+    }
+
     return (
-        <EntityPagination 
-            disabled={worklflows.isFetching} 
-            totalPages={worklflows.data.totalPages} 
-            page={worklflows.data.page} 
-            onPageChange={(page) => setParams({...params, page})}
+        <EntityPagination
+            disabled={isFetching}
+            totalPages={workflows.totalPages}
+            page={workflows.page}
+            onPageChange={(page) => setParams({ ...params, page })}
         />
     )
 }
@@ -87,28 +131,31 @@ export const WorkflowsContainer = ({
     children: React.ReactNode;
 }) => {
     return (
-        <EntityContainer 
-            header={<WorkflowsHeader />} 
+        <EntityContainer
+            header={<WorkflowsHeader />}
             search={<WorkflowsSearch />}
             pagination={<WorkflowsPagination />}
         >
-            {children}
+            <div className="space-y-4">
+                <WorkflowUsageDisplay />
+                {children}
+            </div>
         </EntityContainer>
     )
 }
 
 export const WorkflowsLoading = () => {
-    return <LoadingView message="Loading Workflows"/>
+    return <LoadingView message="Loading Workflows" />
 };
 
 export const WorkflowsError = () => {
-    return <ErrorView message="Error loading Workflows"/>
+    return <ErrorView message="Error loading Workflows" />
 }
 
 export const WorkFlowsEmpty = () => {
     const router = useRouter()
     const createWorkflow = useCreateWorkflow();
-    const {handleError, modal}  = useUpgradeModal();
+    const { handleError, modal } = useUpgradeModal();
 
     const handleCreate = () => {
         createWorkflow.mutate(undefined, {
@@ -124,15 +171,15 @@ export const WorkFlowsEmpty = () => {
     return (
         <>
             {modal}
-            <EmptyView 
+            <EmptyView
                 onNew={handleCreate}
-                message="You haven't created any workflows yet. Get started by creating your first  workflow" 
+                message="You haven't created any workflows yet. Get started by creating your first  workflow"
             />
         </>
     )
 }
 
-export const WorkFlowItem = ( { data } : {data: Workflow} ) => {
+export const WorkFlowItem = ({ data }: { data: Workflow }) => {
 
     const removeWorkflow = useRemoveWorkflow();
 
@@ -146,9 +193,9 @@ export const WorkFlowItem = ( { data } : {data: Workflow} ) => {
             title={data.name}
             subtitle={
                 <>
-                    Updated {formatDistanceToNow(data.updatedAt, {addSuffix: true})}{" "}
+                    Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })}{" "}
                     &bull; Created{" "}
-                    {formatDistanceToNow(data.createdAt, {addSuffix: true})}
+                    {formatDistanceToNow(data.createdAt, { addSuffix: true })}
                 </>
             }
             image={

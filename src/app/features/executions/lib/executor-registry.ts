@@ -9,6 +9,10 @@ import { openaiExecutor } from "../components/openai/executor";
 import { anthropicExecutor } from "../components/anthropic/executor";
 import { discordExecutor } from "../components/discord/executor";
 import { slackExecutor } from "../components/slack/executor";
+import { whatsappExecutor } from "../components/whatsapp/executor";
+import { whatsappTriggerExecutor } from "../../triggers/components/whatsapp-trigger/executor";
+import { telegramExecutor } from "../components/telegram/executor";
+import { telegramTriggerExecutor } from "../../triggers/components/telegram-trigger/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor> = {
     [NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
@@ -21,12 +25,16 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
     [NodeType.OPENAI]: openaiExecutor,
     [NodeType.DISCORD]: discordExecutor,
     [NodeType.SLACK]: slackExecutor,
+    [NodeType.WHATSAPP]: whatsappExecutor,
+    [NodeType.WHATSAPP_TRIGGER]: whatsappTriggerExecutor,
+    [NodeType.TELEGRAM]: telegramExecutor,
+    [NodeType.TELEGRAM_TRIGGER]: telegramTriggerExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor => {
     const executor = executorRegistry[type];
 
-    if(!executor) {
+    if (!executor) {
         throw new Error(`No executor found for node type: ${type}`);
     }
 

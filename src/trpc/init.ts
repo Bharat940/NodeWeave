@@ -49,3 +49,33 @@ export const premiumProcedure = protectedProcedure.use(
     return next({ ctx: { ...ctx, customer } });
   }
 )
+
+export const workflowLimitedProcedure = protectedProcedure.use(
+  async ({ ctx, next }) => {
+    const customer = await polarClient.customers.getStateExternal({
+      externalId: ctx.auth.user.id,
+    });
+
+    // Premium users have unlimited workflows
+    if (customer.activeSubscriptions && customer.activeSubscriptions.length > 0) {
+      return next({ ctx: { ...ctx, customer } });
+    }
+
+    // Free users: check workflow count
+    const { WORKFLOW_LIMITS } = await import("@/config/constants");
+    const { default: prisma } = await import("@/lib/db");
+
+    const workflowCount = await prisma.workflow.count({
+      where: { userId: ctx.auth.user.id }
+    });
+
+    if (workflowCount >= WORKFLOW_LIMITS.FREE_USER_MAX_WORKFLOWS) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: `You've reached the free tier limit of ${WORKFLOW_LIMITS.FREE_USER_MAX_WORKFLOWS} workflows. Upgrade to Pro for unlimited workflows.`
+      });
+    }
+
+    return next({ ctx });
+  }
+)

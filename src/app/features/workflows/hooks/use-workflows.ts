@@ -1,5 +1,5 @@
 import { useTRPC } from "@/trpc/client";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useWorkflowParams } from "./use-workflows-params";
 
@@ -8,6 +8,17 @@ export const useSuspenseWorkflows = () => {
     const [params] = useWorkflowParams();
 
     return useSuspenseQuery(trpc.workflows.getMany.queryOptions(params));
+};
+
+// Non-suspense version that won't throw during SSR
+export const useWorkflows = () => {
+    const trpc = useTRPC();
+    const [params] = useWorkflowParams();
+
+    return useQuery({
+        ...trpc.workflows.getMany.queryOptions(params),
+        retry: 1, // Only retry once on failure
+    });
 };
 
 export const useCreateWorkflow = () => {

@@ -45,6 +45,18 @@ const triggerNodes: NodeTypeOption[] = [
         description: "Runs the flow when a stripe event is captured",
         icon: "/logos/stripe.svg",
     },
+    {
+        type: NodeType.WHATSAPP_TRIGGER,
+        label: "WhatsApp",
+        description: "Triggers on incoming whatsapp message",
+        icon: "/logos/whatsapp.svg",
+    },
+    {
+        type: NodeType.TELEGRAM_TRIGGER,
+        label: "Telegram",
+        description: "Triggers on incoming telegram message",
+        icon: "/logos/telegram.svg",
+    },
 ];
 
 const executinNodes: NodeTypeOption[] = [
@@ -83,12 +95,24 @@ const executinNodes: NodeTypeOption[] = [
         label: "Slack",
         description: "Send a message to slack",
         icon: "/logos/slack.svg",
-    }
+    },
+    {
+        type: NodeType.WHATSAPP,
+        label: "Whatsapp",
+        description: "Send a message to whatsapp",
+        icon: "/logos/whatsapp.svg",
+    },
+    {
+        type: NodeType.TELEGRAM,
+        label: "Telegram",
+        description: "Send a message to telegram",
+        icon: "/logos/telegram.svg",
+    },
 ];
 
 interface NodeSelectorProps {
     open: boolean;
-    onOpenChange: (open: boolean)  => void;
+    onOpenChange: (open: boolean) => void;
     children: React.ReactNode;
 };
 
@@ -100,7 +124,7 @@ export function NodeSelector({
     const { setNodes, getNodes, screenToFlowPosition } = useReactFlow();
 
     const handleNodeSelect = useCallback((selection: NodeTypeOption) => {
-        if(selection.type === "MANUAL_TRIGGER") {
+        if (selection.type === "MANUAL_TRIGGER") {
             const nodes = getNodes();
             const hasManualTrigger = nodes.some((node) => node.type === NodeType.MANUAL_TRIGGER);
 
@@ -115,7 +139,7 @@ export function NodeSelector({
 
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
-            
+
             const flowPosition = screenToFlowPosition({
                 x: centerX + (Math.random() - 0.5) * 200,
                 y: centerY + (Math.random() - 0.5) * 200,
@@ -162,8 +186,8 @@ export function NodeSelector({
                         const Icon = nodeType.icon;
 
                         return (
-                            <div 
-                                key={nodeType.type} 
+                            <div
+                                key={nodeType.type}
                                 className="w-full justify-start h-auto py-5 px-4 rounded-none cursor-pointer border-l-2 border-transparent hover:border-l-primary"
                                 onClick={() => handleNodeSelect(nodeType)}
                             >
@@ -192,8 +216,8 @@ export function NodeSelector({
                         const Icon = nodeType.icon;
 
                         return (
-                            <div 
-                                key={nodeType.type} 
+                            <div
+                                key={nodeType.type}
                                 className="w-full justify-start h-auto py-5 px-4 rounded-none cursor-pointer border-l-2 border-transparent hover:border-l-primary"
                                 onClick={() => handleNodeSelect(nodeType)}
                             >
