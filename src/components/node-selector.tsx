@@ -57,6 +57,12 @@ const triggerNodes: NodeTypeOption[] = [
         description: "Triggers on incoming telegram message",
         icon: "/logos/telegram.svg",
     },
+    {
+        type: NodeType.GITHUB_TRIGGER,
+        label: "GitHub",
+        description: "Triggers on GitHub events (push, pull request, issues)",
+        icon: "/logos/github.svg",
+    },
 ];
 
 const executinNodes: NodeTypeOption[] = [
@@ -107,6 +113,12 @@ const executinNodes: NodeTypeOption[] = [
         label: "Telegram",
         description: "Send a message to telegram",
         icon: "/logos/telegram.svg",
+    },
+    {
+        type: NodeType.GITHUB,
+        label: "GitHub",
+        description: "Post a comment on GitHub issue or pull request",
+        icon: "/logos/github.svg",
     },
 ];
 

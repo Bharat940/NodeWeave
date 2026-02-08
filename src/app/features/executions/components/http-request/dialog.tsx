@@ -35,12 +35,12 @@ import { Button } from "@/components/ui/button";
 const formSchema = z.object({
     variableName: z
         .string()
-        .min(1, {message: "Variable name is required"})
+        .min(1, { message: "Variable name is required" })
         .regex(/^[A-Za-z_$][A-Za-z0-9_$]*$/, {
             message: "Variable name must start with a letter or underscore and contains only letters, numbers, and underscores.",
         }),
     endpoint: z.string().min(1, { message: "Please enter a valid URL" }),
-    method: z.enum(["GET" , "POST" , "PUT" , "PATCH" , "DELETE"]),
+    method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
     body: z.string().optional()
 });
 
@@ -70,7 +70,7 @@ export const HttpRequestDialog = ({
     });
 
     useEffect(() => {
-        if(open) {
+        if (open) {
             form.reset({
                 variableName: defaultValues.variableName || "",
                 endpoint: defaultValues.endpoint || "",
@@ -91,7 +91,7 @@ export const HttpRequestDialog = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
                         HTTP Request
@@ -108,7 +108,7 @@ export const HttpRequestDialog = ({
                         <FormField
                             control={form.control}
                             name="variableName"
-                            render={({field}) => (
+                            render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Variable Name</FormLabel>
                                     <FormControl>
@@ -127,10 +127,10 @@ export const HttpRequestDialog = ({
                         <FormField
                             control={form.control}
                             name="method"
-                            render={({field}) => (
+                            render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Method</FormLabel>
-                                    <Select 
+                                    <Select
                                         onValueChange={field.onChange}
                                         defaultValue={field.value}
                                     >
@@ -158,7 +158,7 @@ export const HttpRequestDialog = ({
                         <FormField
                             control={form.control}
                             name="endpoint"
-                            render={({field}) => (
+                            render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Endpoint URL</FormLabel>
                                     <FormControl>
@@ -176,25 +176,25 @@ export const HttpRequestDialog = ({
                         />
                         {showBodyField && (
                             <FormField
-                            control={form.control}
-                            name="body"
-                            render={({field}) => (
-                                <FormItem>
-                                    <FormLabel>Request Body</FormLabel>
-                                    <Textarea 
-                                        placeholder={
-                                            '{\n "userId": "{{httpResponse.data.id}}", \n "name": "{{httpResponse.data.name}}", \n "items": "{{httpResponse.data.items}}"\n}'
-                                        }
-                                        className="min-h-[120px] font-mono text-sm"
-                                        {...field}
-                                    />
-                                    <FormDescription>
-                                        JSON with template variables. Use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                                control={form.control}
+                                name="body"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Request Body</FormLabel>
+                                        <Textarea
+                                            placeholder={
+                                                '{\n "userId": "{{httpResponse.data.id}}", \n "name": "{{httpResponse.data.name}}", \n "items": "{{httpResponse.data.items}}"\n}'
+                                            }
+                                            className="min-h-[120px] font-mono text-sm"
+                                            {...field}
+                                        />
+                                        <FormDescription>
+                                            JSON with template variables. Use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                         )}
                         <DialogFooter className="mt-4">
                             <Button type="submit">Save</Button>

@@ -31,29 +31,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { useCredentialsByType } from "@/app/features/credentials/hooks/use-credentials";
 import { CredentialType } from "@/generated/prisma";
+import { useCredentialsByType } from "@/app/features/credentials/hooks/use-credentials";
 import Image from "next/image";
-
-export const AVAILABLE_MODELS = [
-    // ===== Claude Opus (highest capability) =====
-    "claude-opus-4-5",
-    "claude-opus-4-20250514",
-    "claude-opus-4-1",
-    "claude-opus-4-0",
-
-    // ===== Claude Sonnet (best default) =====
-    "claude-sonnet-4-5",
-    "claude-sonnet-4-20250514",
-    "claude-sonnet-4-0",
-    "claude-3-7-sonnet-latest",
-    "claude-3-7-sonnet-20250219",
-
-    // ===== Claude Haiku (fast and cheap) =====
-    "claude-haiku-4-5",
-    "claude-3-5-haiku-latest",
-    "claude-3-5-haiku-20241022",
-] as const;
 
 const formSchema = z.object({
     variableName: z
@@ -62,40 +42,43 @@ const formSchema = z.object({
         .regex(/^[A-Za-z_$][A-Za-z0-9_$]*$/, {
             message: "Variable name must start with a letter or underscore and contains only letters, numbers, and underscores.",
         }),
-    credentialId: z.string().min(1, "Credential is required"),
-    model: z.enum(AVAILABLE_MODELS),
-    systemPrompt: z.string().optional(),
-    userPrompt: z.string().min(1, "User prompt is required"),
+    credentialId: z.string().min(1, "GitHub Credential is required"),
+    owner: z.string().min(1, "Repository owner is required"),
+    repo: z.string().min(1, "Repository name is required"),
+    issueNumber: z.string().min(1, "Issue/PR number is required"),
+    commentBody: z.string().min(1, "Comment body is required"),
 });
 
-export type AnthropicFormValues = z.infer<typeof formSchema>;
+export type GitHubFormValues = z.infer<typeof formSchema>;
 
 interface Props {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onSubmit: (values: z.infer<typeof formSchema>) => void;
-    defaultValues?: Partial<AnthropicFormValues>;
+    defaultValues?: Partial<GitHubFormValues>;
 };
 
-export const AnthropicDialog = ({
+export const GitHubDialog = ({
     open,
     onOpenChange,
     onSubmit,
     defaultValues = {},
 }: Props) => {
+
     const {
         data: credentials,
         isLoading: isLoadingCredentials,
-    } = useCredentialsByType(CredentialType.ANTHROPIC);
+    } = useCredentialsByType(CredentialType.GITHUB);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             variableName: defaultValues.variableName || "",
             credentialId: defaultValues.credentialId || "",
-            model: defaultValues.model || AVAILABLE_MODELS[0],
-            systemPrompt: defaultValues.systemPrompt || "",
-            userPrompt: defaultValues.userPrompt || "",
+            owner: defaultValues.owner || "",
+            repo: defaultValues.repo || "",
+            issueNumber: defaultValues.issueNumber || "",
+            commentBody: defaultValues.commentBody || "",
         },
     });
 
@@ -104,14 +87,15 @@ export const AnthropicDialog = ({
             form.reset({
                 variableName: defaultValues.variableName || "",
                 credentialId: defaultValues.credentialId || "",
-                model: defaultValues.model || AVAILABLE_MODELS[0],
-                systemPrompt: defaultValues.systemPrompt || "",
-                userPrompt: defaultValues.userPrompt || "",
+                owner: defaultValues.owner || "",
+                repo: defaultValues.repo || "",
+                issueNumber: defaultValues.issueNumber || "",
+                commentBody: defaultValues.commentBody || "",
             });
         }
     }, [open, defaultValues, form]);
 
-    const watchVariableName = form.watch("variableName") || "myAnthropic";
+    const watchVariableName = form.watch("variableName") || "myGitHub";
 
     const handleSubmit = (values: z.infer<typeof formSchema>) => {
         onSubmit(values);
@@ -123,16 +107,16 @@ export const AnthropicDialog = ({
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
-                        Anthropic Configuratiob
+                        GitHub Configuration
                     </DialogTitle>
                     <DialogDescription>
-                        Configure the AI model and prompts for this node.
+                        Configure GitHub to post a comment on an issue or pull request.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(handleSubmit)}
-                        className="space-y-8 mt-4"
+                        className="space-y-6 mt-4"
                     >
                         <FormField
                             control={form.control}
@@ -142,39 +126,12 @@ export const AnthropicDialog = ({
                                     <FormLabel>Variable Name</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="myAnthropic"
+                                            placeholder="myGitHub"
                                             {...field}
                                         />
                                     </FormControl>
                                     <FormDescription>
-                                        Use this name to reference the result in other nodes:{" "} {`{{${watchVariableName}.text}}`}
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="model"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Model</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                        <FormControl>
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select a model" />
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {AVAILABLE_MODELS.map((model) => (
-                                                <SelectItem key={model} value={model}>
-                                                    {model}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormDescription>
-                                        The Anthropic model to use for completion
+                                        Use this name to reference the result in other nodes:{" "} {`{{${watchVariableName}.commentUrl}}`}
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
@@ -186,7 +143,7 @@ export const AnthropicDialog = ({
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Anthropic Credential
+                                        GitHub Credential
                                     </FormLabel>
                                     <Select
                                         onValueChange={field.onChange}
@@ -207,8 +164,8 @@ export const AnthropicDialog = ({
                                                 >
                                                     <div className="flex items-center gap-2">
                                                         <Image
-                                                            src="/logos/anthropic.svg"
-                                                            alt="Anthropic"
+                                                            src="/logos/github.svg"
+                                                            alt="GitHub"
                                                             width={16}
                                                             height={16}
                                                         />
@@ -218,23 +175,76 @@ export const AnthropicDialog = ({
                                             ))}
                                         </SelectContent>
                                     </Select>
+                                    <FormDescription>
+                                        Select a GitHub Personal Access Token (PAT) credential
+                                    </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="owner"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>
+                                            Repository Owner
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                placeholder="{{github.repository.owner.login}}"
+                                                className="font-mono text-sm"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormDescription>
+                                            Username or organization
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="repo"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>
+                                            Repository Name
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                placeholder="{{github.repository.name}}"
+                                                className="font-mono text-sm"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormDescription>
+                                            Repository name
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                         <FormField
                             control={form.control}
-                            name="systemPrompt"
+                            name="issueNumber"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>System Prompt (Optional)</FormLabel>
-                                    <Textarea
-                                        placeholder="You are a helpful assistant."
-                                        className="min-h-[80px] font-mono text-sm"
-                                        {...field}
-                                    />
+                                    <FormLabel>
+                                        Issue/PR Number
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder="{{github.number}}"
+                                            className="font-mono text-sm"
+                                            {...field}
+                                        />
+                                    </FormControl>
                                     <FormDescription>
-                                        Sets the behavior of the assistant. Use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects
+                                        Issue or Pull Request number
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
@@ -242,17 +252,17 @@ export const AnthropicDialog = ({
                         />
                         <FormField
                             control={form.control}
-                            name="userPrompt"
+                            name="commentBody"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>User Prompt</FormLabel>
+                                    <FormLabel>Comment Body</FormLabel>
                                     <Textarea
-                                        placeholder="Summarize this text: {{json httpResponse.data}}"
+                                        placeholder="AI Analysis: {{myAI.text}}"
                                         className="min-h-[120px] font-mono text-sm"
                                         {...field}
                                     />
                                     <FormDescription>
-                                        The prompt to send to the AI. Use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects
+                                        The comment to post. Use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>

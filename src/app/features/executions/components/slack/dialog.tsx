@@ -82,7 +82,7 @@ export const SlackDialog = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
                         Slack Configuratiob
@@ -115,10 +115,10 @@ export const SlackDialog = ({
                                 </FormItem>
                             )}
                         />
-                        <FormField 
-                            control={form.control} 
-                            name="webhookUrl" 
-                            render={({ field}) => (
+                        <FormField
+                            control={form.control}
+                            name="webhookUrl"
+                            render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
                                         Webhook URL

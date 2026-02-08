@@ -13,16 +13,16 @@ import Image from "next/image";
 
 export const CredentialsSearch = () => {
     const [params, setParams] = useCredentialsParams();
-    const {searchValue, onSearchChange} = useEntitySearch({
+    const { searchValue, onSearchChange } = useEntitySearch({
         params,
         setParams,
     });
 
     return (
-        <EntitySearch 
-            value={searchValue} 
-            onChange={onSearchChange} 
-            placeholder="Seacrh Credentials..." 
+        <EntitySearch
+            value={searchValue}
+            onChange={onSearchChange}
+            placeholder="Seacrh Credentials..."
         />
     )
 }
@@ -31,7 +31,7 @@ export const CredentialsList = () => {
     const credentials = useSuspenseCredentials();
 
     return (
-        <EntityList 
+        <EntityList
             items={credentials.data.items}
             getKey={(credential) => credential.id}
             renderItem={(credential) => <CredentialItem data={credential} />}
@@ -40,11 +40,11 @@ export const CredentialsList = () => {
     )
 };
 
-export const CredentialsHeader = ({ disabled }: {disabled?: boolean}) => {
+export const CredentialsHeader = ({ disabled }: { disabled?: boolean }) => {
     return (
-        <EntityHeader 
-            title="Credentials" 
-            description="Create and manage your credentials" 
+        <EntityHeader
+            title="Credentials"
+            description="Create and manage your credentials"
             newButtonHref="/credentials/new"
             newButtonLabel="New credential"
             disabeled={disabled}
@@ -57,11 +57,11 @@ export const CredentialsPagination = () => {
     const [params, setParams] = useCredentialsParams();
 
     return (
-        <EntityPagination 
-            disabled={credentials.isFetching} 
-            totalPages={credentials.data.totalPages} 
-            page={credentials.data.page} 
-            onPageChange={(page) => setParams({...params, page})}
+        <EntityPagination
+            disabled={credentials.isFetching}
+            totalPages={credentials.data.totalPages}
+            page={credentials.data.page}
+            onPageChange={(page) => setParams({ ...params, page })}
         />
     )
 }
@@ -72,8 +72,8 @@ export const CredentialsContainer = ({
     children: React.ReactNode;
 }) => {
     return (
-        <EntityContainer 
-            header={<CredentialsHeader />} 
+        <EntityContainer
+            header={<CredentialsHeader />}
             search={<CredentialsSearch />}
             pagination={<CredentialsPagination />}
         >
@@ -83,11 +83,11 @@ export const CredentialsContainer = ({
 }
 
 export const CredentialsLoading = () => {
-    return <LoadingView message="Loading Credential..."/>
+    return <LoadingView message="Loading Credential..." />
 };
 
 export const CredentialsError = () => {
-    return <ErrorView message="Error loading Credential..."/>
+    return <ErrorView message="Error loading Credential..." />
 }
 
 export const CredentialsEmpty = () => {
@@ -98,9 +98,9 @@ export const CredentialsEmpty = () => {
     };
 
     return (
-        <EmptyView 
+        <EmptyView
             onNew={handleCreate}
-            message="You haven't created any credentials yet. Get started by creating your first credential" 
+            message="You haven't created any credentials yet. Get started by creating your first credential"
         />
     )
 };
@@ -109,9 +109,10 @@ const credentialLogos: Record<CredentialType, string> = {
     [CredentialType.OPENAI]: "/logos/openai.svg",
     [CredentialType.ANTHROPIC]: "/logos/anthropic.svg",
     [CredentialType.GEMINI]: "/logos/gemini.svg",
+    [CredentialType.GITHUB]: "/logos/github.svg",
 }
 
-export const CredentialItem = ( { data } : {data: Credential} ) => {
+export const CredentialItem = ({ data }: { data: Credential }) => {
 
     const removeCredential = useRemoveCredential();
 
@@ -127,14 +128,14 @@ export const CredentialItem = ( { data } : {data: Credential} ) => {
             title={data.name}
             subtitle={
                 <>
-                    Updated {formatDistanceToNow(data.updatedAt, {addSuffix: true})}{" "}
+                    Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })}{" "}
                     &bull; Created{" "}
-                    {formatDistanceToNow(data.createdAt, {addSuffix: true})}
+                    {formatDistanceToNow(data.createdAt, { addSuffix: true })}
                 </>
             }
             image={
                 <div className="size-8 flex items-center justify-center">
-                    <Image src={logo} alt={data.type} width={20} height={20}/>
+                    <Image src={logo} alt={data.type} width={20} height={20} />
                 </div>
             }
             onRemove={handleRemove}

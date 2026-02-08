@@ -33,7 +33,7 @@ export const StripeTriggerDialog = ({
         try {
             await navigator.clipboard.writeText(webhookUrl);
             toast.success("Webhook URL copied to clipboard")
-        } catch  {
+        } catch {
             toast.error("Failed to copy URL");
         }
     }
@@ -41,13 +41,13 @@ export const StripeTriggerDialog = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
                         Stripe Trigger Configuration
                     </DialogTitle>
                     <DialogDescription>
-                        Configure this webhook URL in your Stripe Dashboard to trigger this workflow on payment events. 
+                        Configure this webhook URL in your Stripe Dashboard to trigger this workflow on payment events.
                     </DialogDescription>
                 </DialogHeader>
 

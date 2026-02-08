@@ -94,6 +94,7 @@ enum CredentialType {
   OPENAI
   ANTHROPIC
   GEMINI
+  GITHUB
 }
 
 model Workflow {
@@ -125,6 +126,8 @@ enum NodeType {
   WHATSAPP_TRIGGER
   TELEGRAM
   TELEGRAM_TRIGGER
+  GITHUB
+  GITHUB_TRIGGER
 }
 
 model Node {

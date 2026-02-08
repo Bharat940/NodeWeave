@@ -13,14 +13,13 @@ import { Label } from "@/components/ui/label";
 import { CopyIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
-import { generateGoogleFormScript } from "./utils";
 
 interface Props {
     open: boolean;
     onOpenChange: (open: boolean) => void;
 };
 
-export const GoogleFormTriggerDialog = ({
+export const GitHubTriggerDialog = ({
     open,
     onOpenChange
 }: Props) => {
@@ -28,31 +27,30 @@ export const GoogleFormTriggerDialog = ({
     const workflowId = params.workflowId as string;
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-    const webhookUrl = `${baseUrl}/api/webhooks/google-form?workflowId=${workflowId}`;
+    const webhookUrl = `${baseUrl}/api/webhooks/github?workflowId=${workflowId}`;
 
-    const copyToClipboard = async () => {
+    const copyToClipboard = async (text: string) => {
         try {
-            await navigator.clipboard.writeText(webhookUrl);
-            toast.success("Webhook URL copied to clipboard")
+            await navigator.clipboard.writeText(text);
+            toast.success("Copied to clipboard")
         } catch {
-            toast.error("Failed to copy URL");
+            toast.error("Failed to copy");
         }
     }
-
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
-                        Google Form Trigger Configuration
+                        GitHub Trigger Configuration
                     </DialogTitle>
                     <DialogDescription>
-                        Use this webhook URL in your Google Form&apos;s Apps Script to trigger this workflow when a form is submitted.
+                        Configure your GitHub repository to send webhook events to this workflow.
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="space-y-4">
+                <div className="space-y-6">
                     <div className="space-y-2">
                         <Label htmlFor="webhook-url">
                             Webhook URL
@@ -68,7 +66,7 @@ export const GoogleFormTriggerDialog = ({
                                 type="button"
                                 size="icon"
                                 variant="outline"
-                                onClick={copyToClipboard}
+                                onClick={() => copyToClipboard(webhookUrl)}
                             >
                                 <CopyIcon className="size-4" />
                             </Button>
@@ -77,37 +75,14 @@ export const GoogleFormTriggerDialog = ({
 
                     <div className="rounded-lg bg-muted p-4 space-y-2">
                         <h4 className="font-medium text-sm">Setup Instructions:</h4>
-                        <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-                            <li>Open your Google Form</li>
-                            <li>Click the three dots menu → Script editor</li>
-                            <li>Copy and paste the script below</li>
-                            <li>Replace WEBHOOK_URL with your webhook URL above</li>
-                            <li>Save and click &quot;Triggers&quot; → Add Trigger</li>
-                            <li>Choose: From form → On form submit → Save</li>
+                        <ol className="text-sm text-muted-foreground space-y-2 list-decimal list-inside">
+                            <li>Go to your GitHub repository settings</li>
+                            <li>Navigate to <strong>Webhooks</strong> → <strong>Add webhook</strong></li>
+                            <li>Paste the webhook URL above</li>
+                            <li>Set Content type to <code>application/json</code></li>
+                            <li>Select events: <strong>Pull requests</strong>, <strong>Issues</strong></li>
+                            <li>Click <strong>Add webhook</strong></li>
                         </ol>
-                    </div>
-
-                    <div className="rounded-lg bg-muted p-4 space-y-3">
-                        <h4 className="font-medium text-sm">Google Apps Script:</h4>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={async () => {
-                                const script = generateGoogleFormScript(webhookUrl);
-                                try {
-                                    await navigator.clipboard.writeText(script);
-                                    toast.success("Script copied to clipboard")
-                                } catch {
-                                    toast.success("Failed to copy Script to clipboard");
-                                }
-                            }}
-                        >
-                            <CopyIcon className="size-4 mr-2" />
-                            Copy Google Apps Script
-                        </Button>
-                        <p className="text-xs text-muted-foreground">
-                            This script includes your webhook URL and handles submissions
-                        </p>
                     </div>
 
                     <div className="rounded-lg bg-muted p-4 space-y-2">
@@ -115,21 +90,33 @@ export const GoogleFormTriggerDialog = ({
                         <ul className="text-sm text-muted-foreground space-y-1">
                             <li>
                                 <code className="bg-background px-1 py-0.5 rounded">
-                                    {"{{googleForm.respondentEmail}}"}
+                                    {"{{github.eventType}}"}
                                 </code>
-                                - Respondent&apos;s email
+                                - Event type (push, pull_request, issues)
                             </li>
                             <li>
                                 <code className="bg-background px-1 py-0.5 rounded">
-                                    {"{{googleForm.responses['Question Name']}}"}
+                                    {"{{github.repository.full_name}}"}
                                 </code>
-                                - Specific Answer
+                                - Repository name
                             </li>
                             <li>
                                 <code className="bg-background px-1 py-0.5 rounded">
-                                    {"{{json googleForm.responses}}"}
+                                    {"{{github.pullRequest.title}}"}
                                 </code>
-                                - All responses as JSON
+                                - PR title (for pull_request events)
+                            </li>
+                            <li>
+                                <code className="bg-background px-1 py-0.5 rounded">
+                                    {"{{github.issue.title}}"}
+                                </code>
+                                - Issue title (for issues events)
+                            </li>
+                            <li>
+                                <code className="bg-background px-1 py-0.5 rounded">
+                                    {"{{github.commits}}"}
+                                </code>
+                                - Commit list (for push events)
                             </li>
                         </ul>
                     </div>

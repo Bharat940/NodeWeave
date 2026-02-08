@@ -60,6 +60,11 @@ const credentialTypeOptions = [
         label: "Gemini",
         logo: "/logos/gemini.svg",
     },
+    {
+        value: CredentialType.GITHUB,
+        label: "GitHub",
+        logo: "/logos/github.svg",
+    },
 ]
 
 interface CredentialFormProps {

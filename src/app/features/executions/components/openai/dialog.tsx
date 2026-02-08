@@ -36,34 +36,34 @@ import { CredentialType } from "@/generated/prisma";
 import Image from "next/image";
 
 export const AVAILABLE_MODELS = [
-  // ===== GPT-5 family (latest) =====
-  "gpt-5",
-  "gpt-5-chat-latest",
-  "gpt-5-pro",
-  "gpt-5-mini",
-  "gpt-5-nano",
+    // ===== GPT-5 family (latest) =====
+    "gpt-5",
+    "gpt-5-chat-latest",
+    "gpt-5-pro",
+    "gpt-5-mini",
+    "gpt-5-nano",
 
-  // ===== GPT-4.1 family =====
-  "gpt-4.1",
-  "gpt-4.1-mini",
-  "gpt-4.1-nano",
+    // ===== GPT-4.1 family =====
+    "gpt-4.1",
+    "gpt-4.1-mini",
+    "gpt-4.1-nano",
 
-  // ===== GPT-4o family =====
-  "gpt-4o",
-  "gpt-4o-mini",
-  "chatgpt-4o-latest",
+    // ===== GPT-4o family =====
+    "gpt-4o",
+    "gpt-4o-mini",
+    "chatgpt-4o-latest",
 
-  // ===== GPT-4 legacy =====
-  "gpt-4",
-  "gpt-4-turbo",
+    // ===== GPT-4 legacy =====
+    "gpt-4",
+    "gpt-4-turbo",
 
-  // ===== GPT-3.5 =====
-  "gpt-3.5-turbo",
+    // ===== GPT-3.5 =====
+    "gpt-3.5-turbo",
 
-  // ===== Reasoning models =====
-  "o1",
-  "o3",
-  "o3-mini",
+    // ===== Reasoning models =====
+    "o1",
+    "o3",
+    "o3-mini",
 ] as const;
 
 const formSchema = z.object({
@@ -95,8 +95,8 @@ export const OpenAiDialog = ({
     defaultValues = {},
 }: Props) => {
     const {
-        data: credentials, 
-        isLoading: isLoadingCredentials, 
+        data: credentials,
+        isLoading: isLoadingCredentials,
     } = useCredentialsByType(CredentialType.OPENAI);
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -131,7 +131,7 @@ export const OpenAiDialog = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
                         OpenAI Configuratiob
@@ -191,10 +191,10 @@ export const OpenAiDialog = ({
                                 </FormItem>
                             )}
                         />
-                        <FormField 
-                            control={form.control} 
-                            name="credentialId" 
-                            render={({ field}) => (
+                        <FormField
+                            control={form.control}
+                            name="credentialId"
+                            render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
                                         OpenAI Credential

@@ -118,8 +118,8 @@ export const GeminiDialog = ({
 }: Props) => {
 
     const {
-        data: credentials, 
-        isLoading: isLoadingCredentials, 
+        data: credentials,
+        isLoading: isLoadingCredentials,
     } = useCredentialsByType(CredentialType.GEMINI);
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -154,7 +154,7 @@ export const GeminiDialog = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
                         Gemini Configuratiob
@@ -214,10 +214,10 @@ export const GeminiDialog = ({
                                 </FormItem>
                             )}
                         />
-                        <FormField 
-                            control={form.control} 
-                            name="credentialId" 
-                            render={({ field}) => (
+                        <FormField
+                            control={form.control}
+                            name="credentialId"
+                            render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
                                         Gemini Credential

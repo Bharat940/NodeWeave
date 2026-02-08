@@ -13,6 +13,8 @@ import { whatsappExecutor } from "../components/whatsapp/executor";
 import { whatsappTriggerExecutor } from "../../triggers/components/whatsapp-trigger/executor";
 import { telegramExecutor } from "../components/telegram/executor";
 import { telegramTriggerExecutor } from "../../triggers/components/telegram-trigger/executor";
+import { githubExecutor } from "../components/github/executor";
+import { githubTriggerExecutor } from "../../triggers/components/github-trigger/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor> = {
     [NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
@@ -29,6 +31,8 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
     [NodeType.WHATSAPP_TRIGGER]: whatsappTriggerExecutor,
     [NodeType.TELEGRAM]: telegramExecutor,
     [NodeType.TELEGRAM_TRIGGER]: telegramTriggerExecutor,
+    [NodeType.GITHUB]: githubExecutor,
+    [NodeType.GITHUB_TRIGGER]: githubTriggerExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor => {

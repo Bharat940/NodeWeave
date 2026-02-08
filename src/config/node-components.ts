@@ -15,6 +15,8 @@ import { WhatsappNode } from "@/app/features/executions/components/whatsapp/node
 import { WhatsappTriggerNode } from "@/app/features/triggers/components/whatsapp-trigger/node";
 import { TelegramNode } from "@/app/features/executions/components/telegram/node";
 import { TelegramTriggerNode } from "@/app/features/triggers/components/telegram-trigger/node";
+import { GitHubNode } from "@/app/features/executions/components/github/node";
+import { GitHubTriggerNode } from "@/app/features/triggers/components/github-trigger/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -31,6 +33,8 @@ export const nodeComponents = {
     [NodeType.WHATSAPP_TRIGGER]: WhatsappTriggerNode,
     [NodeType.TELEGRAM]: TelegramNode,
     [NodeType.TELEGRAM_TRIGGER]: TelegramTriggerNode,
+    [NodeType.GITHUB]: GitHubNode,
+    [NodeType.GITHUB_TRIGGER]: GitHubTriggerNode,
 } as const satisfies NodeTypes
 
 export type RegisteredNodeType = keyof typeof nodeComponents;

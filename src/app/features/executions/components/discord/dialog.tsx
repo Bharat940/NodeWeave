@@ -86,7 +86,7 @@ export const DiscordDialog = ({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
                         Discord Configuratiob
@@ -119,10 +119,10 @@ export const DiscordDialog = ({
                                 </FormItem>
                             )}
                         />
-                        <FormField 
-                            control={form.control} 
-                            name="webhookUrl" 
-                            render={({ field}) => (
+                        <FormField
+                            control={form.control}
+                            name="webhookUrl"
+                            render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
                                         Webhook URL
@@ -158,10 +158,10 @@ export const DiscordDialog = ({
                                 </FormItem>
                             )}
                         />
-                        <FormField 
-                            control={form.control} 
-                            name="username" 
-                            render={({ field}) => (
+                        <FormField
+                            control={form.control}
+                            name="username"
+                            render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
                                         Bot Username (Optional)
