@@ -42,8 +42,8 @@ export const AppSidebar = () => {
                 <SidebarMenuItem>
                     <SidebarMenuButton asChild className="gap-x-4 h-10 px-4">
                         <Link href="/" prefetch>
-                            <Image src="/logos/logo.svg" alt="Nodebase" width={30} height={30} />
-                            <span className="font-semibold text-sm">Nodebase</span>
+                            <Image src="/logos/logo.svg" alt="NodeWeave" width={30} height={30} />
+                            <span className="font-semibold text-sm">NodeWeave</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -80,21 +80,21 @@ export const AppSidebar = () => {
 
             <SidebarFooter>
                 <SidebarMenu>
-                    <SidebarMenuItem> 
+                    <SidebarMenuItem>
                         {!hasActiveSubscription && !isLoading && (
-                        <SidebarMenuButton
-                            tooltip="Upgrade to pro"
-                            className="gap-x-4 h-10 px-4"
-                            onClick={() => authClient.checkout({ slug: "pro" })}>
-                            <StarIcon className="h-4 w-4" />
-                            <span>Upgrade to Pro</span>
-                        </SidebarMenuButton>
+                            <SidebarMenuButton
+                                tooltip="Upgrade to pro"
+                                className="gap-x-4 h-10 px-4"
+                                onClick={() => authClient.checkout({ slug: "pro" })}>
+                                <StarIcon className="h-4 w-4" />
+                                <span>Upgrade to Pro</span>
+                            </SidebarMenuButton>
                         )}
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <SidebarMenuButton 
-                            tooltip="Billing Portal" 
-                            className="gap-x-4 h-10 px-4" 
+                        <SidebarMenuButton
+                            tooltip="Billing Portal"
+                            className="gap-x-4 h-10 px-4"
                             onClick={() => authClient.customer.portal()}
                         >
                             <CreditCardIcon className="h-4 w-4" />
