@@ -124,7 +124,7 @@ Execution nodes that perform specific tasks:
 ## Project Structure
 
 ```
-nodebase/
+nodeweave/
 ├── prisma/
 │   └── schema.prisma          # Database schema definition
 ├── public/
@@ -177,8 +177,8 @@ nodebase/
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/Bharat940/nodebase.git
-cd nodebase
+git clone https://github.com/Bharat940/nodeweave.git
+cd nodeweave
 ```
 
 2. Install dependencies:
@@ -379,7 +379,7 @@ npx prisma migrate deploy
 
 ## Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/Bharat940/nodebase/issues) if you want to contribute.
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/Bharat940/nodeweave/issues) if you want to contribute.
 
 To contribute:
 1. Fork the repository
