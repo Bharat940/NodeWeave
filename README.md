@@ -45,6 +45,7 @@ NodeWeave is a modern SaaS automation platform that allows users to build sophis
 Workflow triggers that initiate automation flows:
 
 - **Manual Trigger**: Start workflows manually from the dashboard
+- **Email Trigger**: Trigger workflows from incoming emails (supports Resend, SendGrid, Mailgun, Postmark)
 - **GitHub Trigger**: Respond to GitHub webhook events (issues, pull requests, comments)
 - **Telegram Trigger**: Trigger workflows from Telegram messages
 - **WhatsApp Trigger**: Trigger workflows from WhatsApp messages via Twilio
@@ -66,6 +67,7 @@ Execution nodes that perform specific tasks:
   - Slack: Post messages to Slack channels
   - Telegram: Send Telegram messages
   - WhatsApp: Send WhatsApp messages via Twilio
+  - Email: Send emails via Resend or SMTP
   
 - **Developer Tools**:
   - GitHub: Create issues, post comments, manage repositories
@@ -90,7 +92,7 @@ Execution nodes that perform specific tasks:
 
 ### Backend
 - **tRPC**: End-to-end typesafe APIs
-- **Prisma**: Database ORM
+- **Prisma v7**: Database ORM with enhanced type safety
 - **PostgreSQL**: Primary database
 - **Better Auth**: Authentication solution
 - **Inngest**: Background job processing and workflow orchestration
@@ -297,6 +299,7 @@ All API endpoints are type-safe and accessible via tRPC:
 
 ### Webhook Endpoints
 
+- `/api/webhooks/email`: Email webhook receiver (supports multiple providers)
 - `/api/webhooks/github`: GitHub webhook receiver
 - `/api/webhooks/telegram`: Telegram webhook receiver
 - `/api/webhooks/whatsapp`: WhatsApp webhook receiver
