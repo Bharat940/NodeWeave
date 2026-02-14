@@ -1,6 +1,6 @@
 "use client";
 
-import { CredentialType } from "@/generated/prisma";
+import { CredentialType } from "@/generated/prisma/browser";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCreateCredential, useUpdateCredential, useSuspenseCredential } from "../hooks/use-credentials";
@@ -64,6 +64,11 @@ const credentialTypeOptions = [
         value: CredentialType.GITHUB,
         label: "GitHub",
         logo: "/logos/github.svg",
+    },
+    {
+        value: CredentialType.RESEND,
+        label: "Resend",
+        logo: "/logos/resend.svg",
     },
 ]
 

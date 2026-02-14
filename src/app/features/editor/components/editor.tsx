@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import {ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, type Node, type Edge, type NodeChange, type EdgeChange, type Connection, Background, Controls, MiniMap, Panel} from "@xyflow/react";
+import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, type Node, type Edge, type NodeChange, type EdgeChange, type Connection, Background, Controls, MiniMap, Panel } from "@xyflow/react";
 import { ErrorView, LoadingView } from "@/components/entity-components";
 import { useSuspenseWorkflow } from "../../workflows/hooks/use-workflows";
 import { nodeComponents } from "@/config/node-components";
@@ -10,19 +10,19 @@ import "@xyflow/react/dist/style.css";
 import { AddNodeButton } from "./add-node-button";
 import { useSetAtom } from "jotai";
 import { editorAtom } from "../store/atoms";
-import { NodeType } from "@/generated/prisma";
+import { NodeType } from "@/generated/prisma/browser";
 import { ExecuteflowButton } from "./execute-workflow-button";
 
 export const EditorLoading = () => {
-    return (<LoadingView message="Loading Editor..."/>);
+    return (<LoadingView message="Loading Editor..." />);
 }
 
 export const EditorError = () => {
     return (<ErrorView message="Error loading editor" />)
 }
 
-export const Editor = ({workflowId}: { workflowId: string}) => {
-    const {data: workflow} = useSuspenseWorkflow(workflowId);
+export const Editor = ({ workflowId }: { workflowId: string }) => {
+    const { data: workflow } = useSuspenseWorkflow(workflowId);
 
     const setEditor = useSetAtom(editorAtom);
 
@@ -48,7 +48,7 @@ export const Editor = ({workflowId}: { workflowId: string}) => {
 
     return (
         <div className="size-full">
-            <ReactFlow 
+            <ReactFlow
                 nodes={nodes}
                 edges={edges}
                 onNodesChange={onNodesChange}
@@ -65,15 +65,15 @@ export const Editor = ({workflowId}: { workflowId: string}) => {
             >
                 <Background />
                 <Controls />
-                <MiniMap />  
+                <MiniMap />
                 <Panel position="top-right">
-                    <AddNodeButton />    
-                </Panel> 
+                    <AddNodeButton />
+                </Panel>
                 {hasManualTrigger && (
                     <Panel position="bottom-center">
                         <ExecuteflowButton workflowId={workflowId} />
                     </Panel>
-                )} 
+                )}
             </ReactFlow>
         </div>
     )

@@ -1,5 +1,5 @@
 import { InitialNode } from "@/components/initial-node"
-import { NodeType } from "@/generated/prisma"
+import { NodeType } from "@/generated/prisma/browser"
 import type { NodeTypes } from "@xyflow/react"
 
 import { HttpRequestNode } from "@/app/features/executions/components/http-request/node";
@@ -17,6 +17,8 @@ import { TelegramNode } from "@/app/features/executions/components/telegram/node
 import { TelegramTriggerNode } from "@/app/features/triggers/components/telegram-trigger/node";
 import { GitHubNode } from "@/app/features/executions/components/github/node";
 import { GitHubTriggerNode } from "@/app/features/triggers/components/github-trigger/node";
+import { EmailNode } from "@/app/features/executions/components/email/node";
+import { EmailTriggerNode } from "@/app/features/triggers/components/email-trigger/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -35,6 +37,8 @@ export const nodeComponents = {
     [NodeType.TELEGRAM_TRIGGER]: TelegramTriggerNode,
     [NodeType.GITHUB]: GitHubNode,
     [NodeType.GITHUB_TRIGGER]: GitHubTriggerNode,
+    [NodeType.EMAIL]: EmailNode,
+    [NodeType.EMAIL_TRIGGER]: EmailTriggerNode,
 } as const satisfies NodeTypes
 
 export type RegisteredNodeType = keyof typeof nodeComponents;

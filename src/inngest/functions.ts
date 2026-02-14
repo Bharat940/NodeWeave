@@ -2,7 +2,7 @@ import { NonRetriableError } from "inngest";
 import { inngest } from "./client";
 import prisma from "@/lib/db";
 import { topologicalSort } from "./utils";
-import { ExecutionStatus, NodeType } from "@/generated/prisma";
+import { ExecutionStatus, NodeType } from "@/generated/prisma/client";
 import { getExecutor } from "@/app/features/executions/lib/executor-registry";
 import { httpRequestChannel } from "./channels/http-request";
 import { manualTriggerChannel } from "./channels/mannual-trigger";
@@ -17,6 +17,7 @@ import { whatsappChannel } from "./channels/whatsapp";
 import { whatsappTriggerChannel } from "./channels/whatsapp-trigger";
 import { telegramChannel } from "./channels/telegram";
 import { telegramTriggerChannel } from "./channels/telegram-trigger";
+import { emailChannel } from "./channels/email";
 
 export const executeWorkflow = inngest.createFunction(
     {
@@ -49,6 +50,7 @@ export const executeWorkflow = inngest.createFunction(
             whatsappTriggerChannel(),
             telegramChannel(),
             telegramTriggerChannel(),
+            emailChannel(),
         ],
     },
     async ({ event, step, publish }) => {

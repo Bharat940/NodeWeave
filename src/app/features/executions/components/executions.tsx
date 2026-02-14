@@ -1,19 +1,19 @@
 "use client";
 
 import React from "react";
-import { EmptyView, EntityContainer, EntityHeader, EntityItem, EntityList, EntityPagination,  ErrorView, LoadingView } from "@/components/entity-components";
+import { EmptyView, EntityContainer, EntityHeader, EntityItem, EntityList, EntityPagination, ErrorView, LoadingView } from "@/components/entity-components";
 import { useSuspenseExecutions } from "../hooks/use-executions"
 import { useExecutionsParams } from "../hooks/use-executions-params";
 import { formatDistanceToNow } from "date-fns";
-import type { Execution } from "@/generated/prisma";
-import { ExecutionStatus } from "@/generated/prisma";
+import type { Execution } from "@/generated/prisma/browser";
+import { ExecutionStatus } from "@/generated/prisma/browser";
 import { CheckCircle2Icon, ClockIcon, Loader2Icon, XCircleIcon } from "lucide-react";
 
 export const ExecutionsList = () => {
     const executions = useSuspenseExecutions();
 
     return (
-        <EntityList 
+        <EntityList
             items={executions.data.items}
             getKey={(execution) => execution.id}
             renderItem={(execution) => <ExecutionItem data={execution} />}
@@ -24,9 +24,9 @@ export const ExecutionsList = () => {
 
 export const ExecutionsHeader = () => {
     return (
-        <EntityHeader 
-            title="Executions" 
-            description="View your workflow execution history" 
+        <EntityHeader
+            title="Executions"
+            description="View your workflow execution history"
         />
     );
 };
@@ -36,11 +36,11 @@ export const ExecutionsPagination = () => {
     const [params, setParams] = useExecutionsParams();
 
     return (
-        <EntityPagination 
-            disabled={executions.isFetching} 
-            totalPages={executions.data.totalPages} 
-            page={executions.data.page} 
-            onPageChange={(page) => setParams({...params, page})}
+        <EntityPagination
+            disabled={executions.isFetching}
+            totalPages={executions.data.totalPages}
+            page={executions.data.page}
+            onPageChange={(page) => setParams({ ...params, page })}
         />
     )
 }
@@ -51,8 +51,8 @@ export const ExecutionssContainer = ({
     children: React.ReactNode;
 }) => {
     return (
-        <EntityContainer 
-            header={<ExecutionsHeader />} 
+        <EntityContainer
+            header={<ExecutionsHeader />}
             pagination={<ExecutionsPagination />}
         >
             {children}
@@ -61,17 +61,17 @@ export const ExecutionssContainer = ({
 }
 
 export const ExecutionsLoading = () => {
-    return <LoadingView message="Loading Execution..."/>
+    return <LoadingView message="Loading Execution..." />
 };
 
 export const ExecutionsError = () => {
-    return <ErrorView message="Error loading Execution..."/>
+    return <ErrorView message="Error loading Execution..." />
 }
 
 export const ExecutionsEmpty = () => {
     return (
-        <EmptyView 
-            message="You haven't created any executions yet. Get started by running your first workflow" 
+        <EmptyView
+            message="You haven't created any executions yet. Get started by running your first workflow"
         />
     )
 };
@@ -93,16 +93,17 @@ const formatStatus = (status: ExecutionStatus) => {
     return status.charAt(0) + status.slice(1).toLowerCase();
 };
 
-export const ExecutionItem = ( { 
-    data 
-} : {data: Execution & {
+export const ExecutionItem = ({
+    data
+}: {
+    data: Execution & {
         workflow: {
             id: string;
             name: string;
         };
     };
 }) => {
-    const duration = data.completedAt 
+    const duration = data.completedAt
         ? Math.round(
             (new Date(data.completedAt).getTime() - new Date(data.startedAt).getTime()) / 1000,
         ) : null;
@@ -110,7 +111,7 @@ export const ExecutionItem = ( {
     const subtitle = (
         <>
             {data.workflow.name} &bull; Started{" "}
-            {formatDistanceToNow(data.startedAt, {addSuffix: true})}
+            {formatDistanceToNow(data.startedAt, { addSuffix: true })}
             {duration !== null && <> &bull; Took {duration}s </>}
         </>
     )

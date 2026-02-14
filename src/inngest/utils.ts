@@ -1,4 +1,4 @@
-import { Connection, Node } from "@/generated/prisma";
+import { Connection, Node } from "@/generated/prisma/client";
 import toposort from "toposort";
 import { inngest } from "./client";
 import { createId } from "@paralleldrive/cuid2";
@@ -18,13 +18,13 @@ export const topologicalSort = (
 
     const connectedNodeIds = new Set<string>();
 
-    for(const conn of connections) {
+    for (const conn of connections) {
         connectedNodeIds.add(conn.fromNodeId);
         connectedNodeIds.add(conn.toNodeId);
     }
 
-    for(const node of nodes) {
-        if(!connectedNodeIds.has(node.id)) {
+    for (const node of nodes) {
+        if (!connectedNodeIds.has(node.id)) {
             edges.push([node.id, node.id]);
         }
     }

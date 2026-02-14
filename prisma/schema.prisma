@@ -5,13 +5,12 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -95,6 +94,7 @@ enum CredentialType {
   ANTHROPIC
   GEMINI
   GITHUB
+  RESEND
 }
 
 model Workflow {
@@ -128,6 +128,8 @@ enum NodeType {
   TELEGRAM_TRIGGER
   GITHUB
   GITHUB_TRIGGER
+  EMAIL
+  EMAIL_TRIGGER
 }
 
 model Node {

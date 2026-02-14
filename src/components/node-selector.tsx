@@ -16,7 +16,7 @@ import {
     SheetTitle,
     SheetTrigger
 } from "@/components/ui/sheet";
-import { NodeType } from "@/generated/prisma";
+import { NodeType } from "@/generated/prisma/browser";
 import { Separator } from "./ui/separator";
 
 export type NodeTypeOption = {
@@ -62,6 +62,12 @@ const triggerNodes: NodeTypeOption[] = [
         label: "GitHub",
         description: "Triggers on GitHub events (push, pull request, issues)",
         icon: "/logos/github.svg",
+    },
+    {
+        type: NodeType.EMAIL_TRIGGER,
+        label: "Email",
+        description: "Triggers on incoming email via webhook",
+        icon: "/logos/resend.svg",
     },
 ];
 
@@ -119,6 +125,12 @@ const executinNodes: NodeTypeOption[] = [
         label: "GitHub",
         description: "Post a comment on GitHub issue or pull request",
         icon: "/logos/github.svg",
+    },
+    {
+        type: NodeType.EMAIL,
+        label: "Email",
+        description: "Send an email",
+        icon: "/logos/resend.svg",
     },
 ];
 

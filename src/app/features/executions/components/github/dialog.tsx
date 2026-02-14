@@ -31,7 +31,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { CredentialType } from "@/generated/prisma";
+import { CredentialType } from "@/generated/prisma/browser";
 import { useCredentialsByType } from "@/app/features/credentials/hooks/use-credentials";
 import Image from "next/image";
 

@@ -5,7 +5,7 @@ import { createTRPCRouter, workflowLimitedProcedure, protectedProcedure } from "
 import type { Node, Edge } from "@xyflow/react";
 import z from "zod";
 import { PAGINATION } from "@/config/constants";
-import { NodeType } from "@/generated/prisma";
+import { NodeType } from "@/generated/prisma/client";
 import { inngest } from "@/inngest/client";
 import { sendWorkflowExecution } from "@/inngest/utils";
 

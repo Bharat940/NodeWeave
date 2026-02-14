@@ -1,4 +1,4 @@
-import { NodeType } from "@/generated/prisma";
+import { NodeType } from "@/generated/prisma/client";
 import { NodeExecutor } from "../types";
 import { manualTriggerExecutor } from "../../triggers/components/manual-trigger/executor";
 import { httpRequestExecutor } from "../components/http-request/executor";
@@ -15,6 +15,8 @@ import { telegramExecutor } from "../components/telegram/executor";
 import { telegramTriggerExecutor } from "../../triggers/components/telegram-trigger/executor";
 import { githubExecutor } from "../components/github/executor";
 import { githubTriggerExecutor } from "../../triggers/components/github-trigger/executor";
+import { emailExecutor } from "../components/email/executor";
+import { emailTriggerExecutor } from "../../triggers/components/email-trigger/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor> = {
     [NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
@@ -33,6 +35,8 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
     [NodeType.TELEGRAM_TRIGGER]: telegramTriggerExecutor,
     [NodeType.GITHUB]: githubExecutor,
     [NodeType.GITHUB_TRIGGER]: githubTriggerExecutor,
+    [NodeType.EMAIL]: emailExecutor,
+    [NodeType.EMAIL_TRIGGER]: emailTriggerExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor => {
