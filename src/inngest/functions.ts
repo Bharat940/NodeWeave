@@ -18,6 +18,8 @@ import { whatsappTriggerChannel } from "./channels/whatsapp-trigger";
 import { telegramChannel } from "./channels/telegram";
 import { telegramTriggerChannel } from "./channels/telegram-trigger";
 import { emailChannel } from "./channels/email";
+import { conditionChannel } from "./channels/condition";
+import { buildAdjacencyMap } from "./utils";
 
 export const executeWorkflow = inngest.createFunction(
     {
@@ -51,6 +53,7 @@ export const executeWorkflow = inngest.createFunction(
             telegramChannel(),
             telegramTriggerChannel(),
             emailChannel(),
+            conditionChannel(),
         ],
     },
     async ({ event, step, publish }) => {
@@ -74,7 +77,7 @@ export const executeWorkflow = inngest.createFunction(
             });
         });
 
-        const sortedNodes = await step.run("prepare-workflow", async () => {
+        const { sortedNodes, connections } = await step.run("prepare-workflow", async () => {
             const workflow = await prisma.workflow.findUniqueOrThrow({
                 where: { id: workflowId },
                 include: {
@@ -83,7 +86,10 @@ export const executeWorkflow = inngest.createFunction(
                 },
             });
 
-            return topologicalSort(workflow.nodes, workflow.connections);
+            return {
+                sortedNodes: topologicalSort(workflow.nodes, workflow.connections),
+                connections: workflow.connections
+            };
         });
 
         const userId = await step.run("find-user-id", async () => {
@@ -99,7 +105,23 @@ export const executeWorkflow = inngest.createFunction(
 
         let context = event.data.initialData || {};
 
+        // Build adjacency map
+        const adjacency = buildAdjacencyMap(connections);
+
+        // Initialize executable nodes with roots (nodes with no incoming connections)
+        const incomingConnections = new Set(connections.map((c) => c.toNodeId));
+        const executableNodes = new Set(
+            sortedNodes
+                .filter((node) => !incomingConnections.has(node.id))
+                .map((node) => node.id)
+        );
+
         for (const node of sortedNodes) {
+            // Skip nodes that haven't been enabled by a parent
+            if (!executableNodes.has(node.id)) {
+                continue;
+            }
+
             const executor = getExecutor(node.type as NodeType);
             context = await executor({
                 data: node.data as Record<string, unknown>,
@@ -109,6 +131,30 @@ export const executeWorkflow = inngest.createFunction(
                 step,
                 publish
             });
+
+            // Activate children based on execution result
+            const nodeOutputs = adjacency.get(node.id);
+            if (nodeOutputs) {
+                if (node.type === NodeType.CONDITION) {
+                    // Branching logic: only activate the path matching the result
+                    const result = context.__conditionResult as boolean;
+                    const outputToEnable = result ? "source-true" : "source-false";
+
+                    const targets = nodeOutputs.get(outputToEnable);
+                    if (targets) {
+                        targets.forEach((targetId) => executableNodes.add(targetId));
+                    }
+
+                    // Clean up internal keys
+                    delete context.__conditionResult;
+                    delete context.__conditionNodeId;
+                } else {
+                    // Standard logic: activate all children
+                    for (const targets of nodeOutputs.values()) {
+                        targets.forEach((targetId) => executableNodes.add(targetId));
+                    }
+                }
+            }
         }
 
         await step.run("update-execution", async () => {

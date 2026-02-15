@@ -4,6 +4,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { useReactFlow } from "@xyflow/react";
 import {
     GlobeIcon,
+    GitBranchIcon,
     MousePointerIcon,
 } from "lucide-react";
 import React, { useCallback } from "react";
@@ -68,6 +69,15 @@ const triggerNodes: NodeTypeOption[] = [
         label: "Email",
         description: "Triggers on incoming email via webhook",
         icon: "/logos/resend.svg",
+    },
+];
+
+const logicNodes: NodeTypeOption[] = [
+    {
+        type: NodeType.CONDITION,
+        label: "If/Else",
+        description: "Branch workflow based on a condition",
+        icon: GitBranchIcon,
     },
 ];
 
@@ -220,6 +230,38 @@ export function NodeSelector({
                                         <img src={Icon} alt={nodeType.label} className="size-5 object-contain rounded-sm" />
                                     ) : (
                                         <Icon className="" />
+                                    )}
+                                    <div className="flex flex-col items-start text-left">
+                                        <span className="font-medium text-sm">
+                                            {nodeType.label}
+                                        </span>
+                                        <span className="text-xs text-muted-foreground">
+                                            {nodeType.description}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+                <Separator />
+                <div className="py-2">
+                    <span className="text-xs font-medium text-muted-foreground px-4 mb-2 block">Logic</span>
+                    {logicNodes.map((nodeType) => {
+                        const Icon = nodeType.icon;
+
+                        return (
+                            <div
+                                key={nodeType.type}
+                                className="w-full justify-start h-auto py-3 px-4 rounded-none cursor-pointer border-l-2 border-transparent hover:border-l-primary hover:bg-muted/50 transition-colors"
+                                onClick={() => handleNodeSelect(nodeType)}
+                            >
+                                <div className="flex items-center gap-3 w-full overflow-hidden">
+                                    {/* Logic nodes use Lucide icons, not images */}
+                                    {typeof Icon === "string" ? (
+                                        <img src={Icon} alt={nodeType.label} className="size-5 object-contain rounded-sm" />
+                                    ) : (
+                                        <Icon className="size-5 text-muted-foreground" />
                                     )}
                                     <div className="flex flex-col items-start text-left">
                                         <span className="font-medium text-sm">

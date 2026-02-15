@@ -19,6 +19,7 @@ import { GitHubNode } from "@/app/features/executions/components/github/node";
 import { GitHubTriggerNode } from "@/app/features/triggers/components/github-trigger/node";
 import { EmailNode } from "@/app/features/executions/components/email/node";
 import { EmailTriggerNode } from "@/app/features/triggers/components/email-trigger/node";
+import { ConditionNode } from "@/app/features/executions/components/condition/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -39,6 +40,7 @@ export const nodeComponents = {
     [NodeType.GITHUB_TRIGGER]: GitHubTriggerNode,
     [NodeType.EMAIL]: EmailNode,
     [NodeType.EMAIL_TRIGGER]: EmailTriggerNode,
+    [NodeType.CONDITION]: ConditionNode,
 } as const satisfies NodeTypes
 
 export type RegisteredNodeType = keyof typeof nodeComponents;

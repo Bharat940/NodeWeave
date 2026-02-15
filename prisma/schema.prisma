@@ -130,6 +130,7 @@ enum NodeType {
   GITHUB_TRIGGER
   EMAIL
   EMAIL_TRIGGER
+  CONDITION
 }
 
 model Node {

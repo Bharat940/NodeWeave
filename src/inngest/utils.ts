@@ -59,3 +59,28 @@ export const sendWorkflowExecution = async (
         id: createId()
     });
 }
+
+interface ConnectionLike {
+    fromNodeId: string;
+    toNodeId: string;
+    fromOutput: string;
+}
+
+export const buildAdjacencyMap = (connections: ConnectionLike[]) => {
+    const adjacency = new Map<string, Map<string, string[]>>();
+
+    for (const conn of connections) {
+        if (!adjacency.has(conn.fromNodeId)) {
+            adjacency.set(conn.fromNodeId, new Map());
+        }
+
+        const nodeOutputs = adjacency.get(conn.fromNodeId)!;
+        if (!nodeOutputs.has(conn.fromOutput)) {
+            nodeOutputs.set(conn.fromOutput, []);
+        }
+
+        nodeOutputs.get(conn.fromOutput)!.push(conn.toNodeId);
+    }
+
+    return adjacency;
+};

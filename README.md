@@ -28,6 +28,8 @@ NodeWeave is a modern SaaS automation platform that allows users to build sophis
 - Error handling and retry mechanisms
 - Execution history and logging
 - Event-driven architecture
+- **Conditional Branching**: Support for If/Else logic and dynamic execution paths
+
 
 ### Credential Management
 - Secure credential storage with encryption using Cryptr
@@ -73,6 +75,11 @@ Execution nodes that perform specific tasks:
   - GitHub: Create issues, post comments, manage repositories
   - HTTP Request: Make custom API calls
 
+### Logic Nodes
+Control flow nodes that manage execution paths:
+
+- **If/Else Condition**: Branch workflows based on dynamic conditions (supports operators like `equals`, `contains`, `greater_than`, etc.)
+
 **Note**: Additional execution nodes and integrations are planned for future releases.
 
 ## Technology Stack
@@ -97,6 +104,7 @@ Execution nodes that perform specific tasks:
 - **Better Auth**: Authentication solution
 - **Inngest**: Background job processing and workflow orchestration
 - **Cryptr**: Encryption for sensitive credentials
+- **Handlebars**: Template engine for dynamic data processing
 
 ### AI & APIs
 - **Vercel AI SDK**: Unified AI model interface
@@ -116,7 +124,7 @@ Execution nodes that perform specific tasks:
 
 ### Workflow System
 - **Workflow**: Container for automation workflows
-- **Node**: Individual workflow nodes (triggers and actions)
+- **Node**: Individual workflow nodes (triggers, actions, and logic)
 - **Connection**: Links between nodes defining execution flow
 - **Execution**: Workflow execution records with status tracking
 
