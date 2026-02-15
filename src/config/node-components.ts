@@ -19,6 +19,8 @@ import { GitHubNode } from "@/app/features/executions/components/github/node";
 import { GitHubTriggerNode } from "@/app/features/triggers/components/github-trigger/node";
 import { EmailNode } from "@/app/features/executions/components/email/node";
 import { EmailTriggerNode } from "@/app/features/triggers/components/email-trigger/node";
+import { WebhookTriggerNode } from "@/app/features/triggers/components/webhook-trigger/node";
+import { CronTriggerNode } from "@/app/features/triggers/components/cron-trigger/node";
 import { ConditionNode } from "@/app/features/executions/components/condition/node";
 
 export const nodeComponents = {
@@ -41,6 +43,8 @@ export const nodeComponents = {
     [NodeType.EMAIL]: EmailNode,
     [NodeType.EMAIL_TRIGGER]: EmailTriggerNode,
     [NodeType.CONDITION]: ConditionNode,
+    [NodeType.WEBHOOK]: WebhookTriggerNode,
+    [NodeType.CRON_TRIGGER]: CronTriggerNode,
 } as const satisfies NodeTypes
 
 export type RegisteredNodeType = keyof typeof nodeComponents;

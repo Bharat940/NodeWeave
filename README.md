@@ -29,6 +29,7 @@ NodeWeave is a modern SaaS automation platform that allows users to build sophis
 - Execution history and logging
 - Event-driven architecture
 - **Conditional Branching**: Support for If/Else logic and dynamic execution paths
+- **Scheduled Execution**: Native support for cron-based workflow scheduling
 
 
 ### Credential Management
@@ -53,6 +54,8 @@ Workflow triggers that initiate automation flows:
 - **WhatsApp Trigger**: Trigger workflows from WhatsApp messages via Twilio
 - **Google Form Trigger**: Process Google Form submissions
 - **Stripe Trigger**: Handle Stripe payment events
+- **Webhook Trigger**: Trigger workflows via standard HTTP POST requests with JSON payloads
+- **Cron Trigger**: Schedule workflows to run at specific intervals using cron expressions (e.g., Every minute, Hourly, Daily)
 
 **Note**: More trigger nodes are planned for future releases.
 
@@ -88,7 +91,7 @@ Control flow nodes that manage execution paths:
 - **Next.js 16**: React framework with App Router and Turbopack
 - **React 19**: Latest React features
 - **TypeScript**: Type-safe development
-- **Tailwind CSS 4**: Utility-first styling
+- **Tailwind CSS v4**: Utility-first styling with CSS-first configuration
 - **Radix UI**: Accessible component primitives
 - **XYFlow**: Visual workflow editor
 - **Lucide React**: Icon library
@@ -172,7 +175,6 @@ nodeweave/
 ├── .env                       # Environment variables
 ├── package.json               # Dependencies and scripts
 ├── tsconfig.json              # TypeScript configuration
-├── tailwind.config.ts         # Tailwind CSS configuration
 └── next.config.ts             # Next.js configuration
 ```
 
@@ -312,6 +314,7 @@ All API endpoints are type-safe and accessible via tRPC:
 - `/api/webhooks/telegram`: Telegram webhook receiver
 - `/api/webhooks/whatsapp`: WhatsApp webhook receiver
 - `/api/webhooks/stripe`: Stripe webhook receiver
+- `/api/webhooks/generic`: Generic webhook receiver for HTTP POST triggers
 
 ### Inngest Endpoints
 

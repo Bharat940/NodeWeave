@@ -6,6 +6,8 @@ import {
     GlobeIcon,
     GitBranchIcon,
     MousePointerIcon,
+    WebhookIcon,
+    ClockIcon,
 } from "lucide-react";
 import React, { useCallback } from "react";
 import { toast } from "sonner";
@@ -69,6 +71,18 @@ const triggerNodes: NodeTypeOption[] = [
         label: "Email",
         description: "Triggers on incoming email via webhook",
         icon: "/logos/resend.svg",
+    },
+    {
+        type: NodeType.WEBHOOK,
+        label: "Webhook",
+        description: "Triggers on incoming HTTP request",
+        icon: WebhookIcon,
+    },
+    {
+        type: NodeType.CRON_TRIGGER,
+        label: "Schedule",
+        description: "Run workflow on a recurring schedule",
+        icon: ClockIcon,
     },
 ];
 

@@ -72,6 +72,7 @@ export const ConditionNode = memo((props: NodeProps<ConditionNodeType>) => {
                     variant="border"
                 >
                     <BaseNode
+                        status={nodeStatus}
                         onDoubleClick={handleOpenSetting}
                         className="w-[40px] h-[40px] flex items-center justify-center p-0"
                     >

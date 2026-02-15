@@ -1,5 +1,6 @@
 import { NonRetriableError } from "inngest";
 import { inngest } from "./client";
+import { genericChannel } from "@/inngest/channels/generic";
 import prisma from "@/lib/db";
 import { topologicalSort } from "./utils";
 import { ExecutionStatus, NodeType } from "@/generated/prisma/client";
@@ -19,6 +20,7 @@ import { telegramChannel } from "./channels/telegram";
 import { telegramTriggerChannel } from "./channels/telegram-trigger";
 import { emailChannel } from "./channels/email";
 import { conditionChannel } from "./channels/condition";
+import { cronTriggerChannel } from "./channels/cron-trigger";
 import { buildAdjacencyMap } from "./utils";
 
 export const executeWorkflow = inngest.createFunction(
@@ -54,6 +56,8 @@ export const executeWorkflow = inngest.createFunction(
             telegramTriggerChannel(),
             emailChannel(),
             conditionChannel(),
+            genericChannel(),
+            cronTriggerChannel(),
         ],
     },
     async ({ event, step, publish }) => {
@@ -174,3 +178,5 @@ export const executeWorkflow = inngest.createFunction(
         };
     },
 );
+
+export { scheduler } from "./functions/scheduler";

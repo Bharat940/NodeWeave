@@ -131,6 +131,8 @@ enum NodeType {
   EMAIL
   EMAIL_TRIGGER
   CONDITION
+  WEBHOOK
+  CRON_TRIGGER
 }
 
 model Node {
