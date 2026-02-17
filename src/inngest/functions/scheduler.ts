@@ -48,6 +48,7 @@ export const scheduler = inngest.createFunction(
                             initialData: {
                                 triggerTime: now.toISOString(),
                             },
+                            triggerType: 'cron',
                         },
                     });
                 }

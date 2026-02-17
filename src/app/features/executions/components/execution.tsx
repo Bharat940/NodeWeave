@@ -19,6 +19,7 @@ import {
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { useSuspenseExecution } from "../hooks/use-executions";
+import { NodeExecutionList } from "./node-execution-list";
 
 const getStatusIcon = (status: ExecutionStatus) => {
     switch (status) {
@@ -145,6 +146,10 @@ export const ExecutionView = ({
                         )}
                     </div>
                 )}
+
+                <div className="py-2">
+                    <NodeExecutionList executions={execution.nodeExecutions} />
+                </div>
 
                 {execution.output && (
                     <div className="mt-6 p-4 bg-muted rounded-md">

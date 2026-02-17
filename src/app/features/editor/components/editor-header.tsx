@@ -16,6 +16,7 @@ import { useSuspenseWorkflow, useUpdateWorkflow, useUpdateWorkflowName } from "@
 import { Input } from "@/components/ui/input";
 import { useAtomValue } from "jotai";
 import { editorAtom } from "../store/atoms";
+import { ExecutionHistoryButton } from "./execution-history";
 
 export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
     const editor = useAtomValue(editorAtom);
@@ -28,14 +29,12 @@ export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
 
         const nodes = editor.getNodes();
         const edges = editor.getEdges();
-        
+
         saveWorkflow.mutate({
             id: workflowId,
             nodes,
             edges
         });
-
-
     }
 
     return (
@@ -142,7 +141,10 @@ export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
         <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 bg-background">
             <SidebarTrigger />
             <EditorBreadCrumbs workflowId={workflowId} />
-            <EditorSaveButton workflowId={workflowId} />
+            <div className="ml-auto flex items-center gap-2">
+                <ExecutionHistoryButton workflowId={workflowId} />
+                <EditorSaveButton workflowId={workflowId} />
+            </div>
         </header>
     )
 }
