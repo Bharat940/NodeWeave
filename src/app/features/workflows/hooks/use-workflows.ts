@@ -113,11 +113,14 @@ export const useUpdateWorkflow = () => {
 
 export const useExecuteWorkflow = () => {
     const trpc = useTRPC();
+    const queryClient = useQueryClient();
 
     return useMutation(
         trpc.workflows.execute.mutationOptions({
             onSuccess: (data) => {
                 toast.success(`Workflow "${data.name}" executed`);
+                // Invalidate executions queries so the new QUEUED execution appears immediately
+                queryClient.invalidateQueries(trpc.executions.getMany.queryFilter());
             },
             onError: (error) => {
                 toast.error(`Failed to execute workflow: ${error.message}`);

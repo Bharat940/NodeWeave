@@ -1,7 +1,8 @@
-import { Connection, Node } from "@/generated/prisma/client";
+import { Connection, Node, ExecutionStatus } from "@/generated/prisma/client";
 import toposort from "toposort";
 import { inngest } from "./client";
 import { createId } from "@paralleldrive/cuid2";
+import prisma from "@/lib/db";
 
 export const topologicalSort = (
     nodes: Node[],
@@ -47,16 +48,43 @@ export const topologicalSort = (
     return sortedNodeIds.map((id) => nodeMap.get(id)!).filter(Boolean);
 };
 
+import { workflowChannel } from "./channels/workflow-channel";
+
 export const sendWorkflowExecution = async (
     data: {
         workflowId: string;
+        triggerType?: string;
         [key: string]: any;
     }
 ) => {
+    const eventId = createId();
+
+    // Pre-create the execution record immediately with QUEUED status
+    // This makes it visible to the user at the exact moment of trigger
+    const execution = await prisma.execution.create({
+        data: {
+            workflowId: data.workflowId,
+            inngestEventId: eventId,
+            status: ExecutionStatus.QUEUED,
+            triggerType: data.triggerType ?? "manual",
+        },
+    });
+
+    // Broadcast QUEUED status to workflow history instantly
+    // We use inngest.send here because we are outside of a function context
+    await inngest.send({
+        name: "workflow/execution.updated",
+        data: {
+            workflowId: data.workflowId,
+            executionId: execution.id,
+            status: ExecutionStatus.QUEUED,
+        },
+    });
+
     return inngest.send({
         name: "workflows/execute.workflow",
         data,
-        id: createId()
+        id: eventId,
     });
 }
 

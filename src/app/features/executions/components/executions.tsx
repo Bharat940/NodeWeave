@@ -7,10 +7,26 @@ import { useExecutionsParams } from "../hooks/use-executions-params";
 import { formatDistanceToNow } from "date-fns";
 import type { Execution } from "@/generated/prisma/browser";
 import { ExecutionStatus } from "@/generated/prisma/browser";
-import { CheckCircle2Icon, ClockIcon, Loader2Icon, XCircleIcon } from "lucide-react";
+import { ExecutionFilters } from "./execution-filters";
+import { ExecutionStatusIcon } from "./execution-status-icon";
+
+import { useWorkflowExecutionsRealtime } from "../hooks/use-workflow-executions-realtime";
+import { fetchWorkflowRealtimeToken } from "../actions";
+import { useCallback } from "react";
 
 export const ExecutionsList = () => {
+    const [params] = useExecutionsParams();
     const executions = useSuspenseExecutions();
+
+    const workflowId = params.workflowId || "";
+
+    const refreshToken = useCallback(() => fetchWorkflowRealtimeToken(workflowId), [workflowId]);
+
+    // Live sync for executions list
+    useWorkflowExecutionsRealtime({
+        workflowId,
+        refreshToken,
+    });
 
     return (
         <EntityList
@@ -53,6 +69,7 @@ export const ExecutionssContainer = ({
     return (
         <EntityContainer
             header={<ExecutionsHeader />}
+            search={<ExecutionFilters />}
             pagination={<ExecutionsPagination />}
         >
             {children}
@@ -76,18 +93,7 @@ export const ExecutionsEmpty = () => {
     )
 };
 
-const getStatusIcon = (status: ExecutionStatus) => {
-    switch (status) {
-        case ExecutionStatus.SUCCESS:
-            return <CheckCircle2Icon className="size-5 text-green-600" />;
-        case ExecutionStatus.FAILED:
-            return <XCircleIcon className="size-5 text-red-600" />;
-        case ExecutionStatus.RUNNING:
-            return <Loader2Icon className="size-5 text-blue-600 animate-spin" />;
-        default:
-            return <ClockIcon className="size-5 text-muted-foreground" />;
-    }
-}
+
 
 const formatStatus = (status: ExecutionStatus) => {
     return status.charAt(0) + status.slice(1).toLowerCase();
@@ -123,7 +129,7 @@ export const ExecutionItem = ({
             subtitle={subtitle}
             image={
                 <div className="size-8 flex items-center justify-center">
-                    {getStatusIcon(data.status)}
+                    <ExecutionStatusIcon status={data.status} size={5} />
                 </div>
             }
         />

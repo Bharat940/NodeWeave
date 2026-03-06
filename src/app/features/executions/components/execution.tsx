@@ -1,10 +1,11 @@
 "use client";
 
 import { ExecutionStatus } from "@/generated/prisma/browser";
-import { CheckCircle2Icon, ClockIcon, Loader2Icon, XCircleIcon } from "lucide-react";
+import { CheckCircle2Icon, ClockIcon, LoaderCircle, RefreshCwIcon, WifiIcon, XCircleIcon } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -20,19 +21,13 @@ import {
 } from "@/components/ui/collapsible";
 import { useSuspenseExecution } from "../hooks/use-executions";
 import { NodeExecutionList } from "./node-execution-list";
+import { useTRPC } from "@/trpc/client";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useExecutionRealtime } from "../hooks/use-execution-realtime";
+import { fetchExecutionRealtimeToken } from "../actions";
+import { ExecutionStatusIcon } from "./execution-status-icon";
 
-const getStatusIcon = (status: ExecutionStatus) => {
-    switch (status) {
-        case ExecutionStatus.SUCCESS:
-            return <CheckCircle2Icon className="size-5 text-green-600" />;
-        case ExecutionStatus.FAILED:
-            return <XCircleIcon className="size-5 text-red-600" />;
-        case ExecutionStatus.RUNNING:
-            return <Loader2Icon className="size-5 text-blue-600 animate-spin" />;
-        default:
-            return <ClockIcon className="size-5 text-muted-foreground" />;
-    }
-}
 
 const formatStatus = (status: ExecutionStatus) => {
     return status.charAt(0) + status.slice(1).toLowerCase();
@@ -43,27 +38,87 @@ export const ExecutionView = ({
 }: {
     executionId: string
 }) => {
+    const trpc = useTRPC();
+    const router = useRouter();
     const { data: execution } = useSuspenseExecution(executionId);
     const [showStackTrace, setShowStackTrace] = useState(false);
 
+    const isRunning = execution.status === ExecutionStatus.RUNNING;
+
+    // Stable refreshToken callback — avoids re-subscribing on every render
+    const refreshToken = useCallback(
+        () => fetchExecutionRealtimeToken(executionId),
+        [executionId]
+    );
+
+    // Subscribe to live node updates while this execution is running
+    const { state: realtimeState } = useExecutionRealtime({
+        executionId,
+        isRunning,
+        refreshToken,
+    });
+
+    const isLive = isRunning && realtimeState === "active";
+
+    const rerunMutation = useMutation(
+        trpc.executions.rerun.mutationOptions({
+            onSuccess: () => {
+                toast.success("Workflow re-triggered", {
+                    description: "A new execution has started.",
+                });
+                router.push("/executions");
+            },
+            onError: (err) => {
+                toast.error("Re-run failed", {
+                    description: err.message,
+                });
+            },
+        })
+    );
+
     const duration = execution.completedAt
         ? Math.round(
-            (new Date(execution.completedAt).getTime() - new Date(execution.startedAt).getTime()) / 100,
+            (new Date(execution.completedAt).getTime() - new Date(execution.startedAt).getTime()) / 1000,
         ) : null;
 
     return (
         <Card className="shadow-none">
             <CardHeader>
-                <div className="flex items-center gap-3">
-                    {getStatusIcon(execution.status)}
-                    <div>
-                        <CardTitle>
-                            {formatStatus(execution.status)}
-                        </CardTitle>
-                        <CardDescription>
-                            Execution for {execution.workflow.name}
-                        </CardDescription>
+                <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                        <ExecutionStatusIcon status={execution.status} size={5} />
+                        <div>
+                            <CardTitle>
+                                {formatStatus(execution.status)}
+                            </CardTitle>
+                            <CardDescription>
+                                Execution for {execution.workflow.name}
+                            </CardDescription>
+                        </div>
+                        {/* Live badge: shown when Inngest Realtime connection is active */}
+                        {isLive && (
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-full px-2.5 py-0.5 animate-pulse">
+                                <WifiIcon className="size-3" />
+                                Live
+                            </span>
+                        )}
                     </div>
+
+                    {execution.status !== ExecutionStatus.RUNNING && (
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={rerunMutation.isPending}
+                            onClick={() => rerunMutation.mutate({ id: executionId })}
+                        >
+                            {rerunMutation.isPending ? (
+                                <LoaderCircle className="size-4 animate-spin" />
+                            ) : (
+                                <RefreshCwIcon className="size-4" />
+                            )}
+                            Re-run
+                        </Button>
+                    )}
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -85,6 +140,14 @@ export const ExecutionView = ({
                         <p className="text-sm font-medium text-muted-foreground">Status</p>
                         <p className="text-sm">{formatStatus(execution.status)}</p>
                     </div>
+
+                    {execution.triggerType && (
+                        <div>
+                            <p className="text-sm font-medium text-muted-foreground">Trigger</p>
+                            <p className="text-sm capitalize">{execution.triggerType}</p>
+                        </div>
+                    )}
+
                     <div>
                         <p className="text-sm font-medium text-muted-foreground">Started</p>
                         <p className="text-sm">{formatDistanceToNow(execution.startedAt, { addSuffix: true })}</p>
@@ -98,14 +161,14 @@ export const ExecutionView = ({
 
                     {duration !== null ? (
                         <div>
-                            <p className="text-sm font-medium text-muted-foreground">Completed</p>
+                            <p className="text-sm font-medium text-muted-foreground">Duration</p>
                             <p className="text-sm">{duration}s</p>
                         </div>
                     ) : null}
 
                     <div>
                         <p className="text-sm font-medium text-muted-foreground">Event ID</p>
-                        <p className="text-sm">{execution.inngestEventId}</p>
+                        <p className="text-sm truncate">{execution.inngestEventId}</p>
                     </div>
                 </div>
 

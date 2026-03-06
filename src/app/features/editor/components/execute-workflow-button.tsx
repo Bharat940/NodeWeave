@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { FlaskConicalIcon } from "lucide-react";
+import { FlaskConicalIcon, Loader2Icon } from "lucide-react";
 import { useExecuteWorkflow } from "../../workflows/hooks/use-workflows";
 
 export const ExecuteflowButton = ({
@@ -14,8 +14,12 @@ export const ExecuteflowButton = ({
     }
 
     return (
-        <Button size="lg" onClick={handleExecute} disabled={executeWorkflow.isPending}>
-            <FlaskConicalIcon className="size-4" />
+        <Button size="sm" onClick={handleExecute} disabled={executeWorkflow.isPending} className="bg-blue-600 hover:bg-blue-700 text-white">
+            {executeWorkflow.isPending ? (
+                <Loader2Icon className="size-4 animate-spin" />
+            ) : (
+                <FlaskConicalIcon className="size-4" />
+            )}
             Execute Workflow
         </Button>
     )

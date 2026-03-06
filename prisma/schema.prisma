@@ -176,6 +176,7 @@ model Connection {
 }
 
 enum ExecutionStatus {
+  QUEUED
   RUNNING
   SUCCESS
   FAILED
@@ -195,6 +196,8 @@ model Execution {
   completedAt DateTime?
 
   inngestEventId String @unique
+
+  triggerType String? // e.g. "cron" | "manual" | "webhook" | "email" etc.
 
   output         Json?
   nodeExecutions NodeExecution[]

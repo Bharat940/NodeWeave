@@ -1,16 +1,14 @@
 "use client";
 
-import { ExecutionStatus } from "@/generated/prisma/browser";
+import { ExecutionStatus, NodeType } from "@/generated/prisma/browser";
 import {
-    CheckCircle2Icon,
-    CircleDashedIcon,
     ClockIcon,
-    Loader2Icon,
-    XCircleIcon,
+    ClipboardIcon,
+    ClipboardCheckIcon,
     ChevronRightIcon,
     ChevronDownIcon
 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, format } from "date-fns";
 import { cn } from "@/lib/utils";
 import {
     Collapsible,
@@ -18,11 +16,8 @@ import {
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
-import { NodeType } from "@/generated/prisma/browser";
-
-// Helper to map NodeType to a label or icon if needed
-// For now, we use the name snapshot from the DB
+import { useState, useCallback } from "react";
+import { ExecutionStatusIcon } from "./execution-status-icon";
 
 interface NodeExecution {
     id: string;
@@ -35,19 +30,6 @@ interface NodeExecution {
     error: string | null;
     startedAt: Date;
     completedAt: Date | null;
-}
-
-const getStatusIcon = (status: ExecutionStatus) => {
-    switch (status) {
-        case ExecutionStatus.SUCCESS:
-            return <CheckCircle2Icon className="size-4 text-green-600" />;
-        case ExecutionStatus.FAILED:
-            return <XCircleIcon className="size-4 text-red-600" />;
-        case ExecutionStatus.RUNNING:
-            return <Loader2Icon className="size-4 text-blue-600 animate-spin" />;
-        default:
-            return <CircleDashedIcon className="size-4 text-muted-foreground" />;
-    }
 }
 
 const getStatusColor = (status: ExecutionStatus) => {
@@ -63,25 +45,52 @@ const getStatusColor = (status: ExecutionStatus) => {
     }
 }
 
+/** Copy-to-clipboard button — shows a checkmark for 2s after copying */
+const CopyButton = ({ text }: { text: string }) => {
+    const [copied, setCopied] = useState(false);
+
+    const copy = useCallback(async () => {
+        await navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    }, [text]);
+
+    return (
+        <button
+            onClick={copy}
+            className="ml-auto p-1 rounded-sm hover:bg-black/10 transition-colors text-muted-foreground hover:text-foreground"
+            title="Copy to clipboard"
+        >
+            {copied
+                ? <ClipboardCheckIcon className="size-3.5 text-green-600" />
+                : <ClipboardIcon className="size-3.5" />
+            }
+        </button>
+    );
+};
+
 const JsonViewer = ({ data, label, isError = false }: { data: any, label: string, isError?: boolean }) => {
-    if (!data) return null;
+    if (data === null || data === undefined) return null;
+
+    const text = typeof data === "string" ? data : JSON.stringify(data, null, 2);
 
     return (
         <div className="flex-1 min-w-0">
-            <p className={cn("text-xs font-medium mb-1.5", isError ? "text-red-700" : "text-muted-foreground")}>
-                {label}
-            </p>
+            <div className="flex items-center mb-1.5">
+                <p className={cn("text-xs font-medium", isError ? "text-red-700" : "text-muted-foreground")}>
+                    {label}
+                </p>
+                <CopyButton text={text} />
+            </div>
             <div className={cn(
                 "rounded-md border p-3 text-xs font-mono overflow-auto max-h-[300px]",
                 isError ? "bg-red-50 border-red-200 text-red-900" : "bg-muted/50 text-foreground"
             )}>
-                <pre className="whitespace-pre-wrap break-all">
-                    {typeof data === 'string' ? data : JSON.stringify(data, null, 2)}
-                </pre>
+                <pre className="whitespace-pre-wrap break-all">{text}</pre>
             </div>
         </div>
-    )
-}
+    );
+};
 
 const NodeExecutionItem = ({ execution }: { execution: NodeExecution }) => {
     const [isOpen, setIsOpen] = useState(execution.status === ExecutionStatus.FAILED);
@@ -89,6 +98,9 @@ const NodeExecutionItem = ({ execution }: { execution: NodeExecution }) => {
     const duration = execution.completedAt
         ? ((new Date(execution.completedAt).getTime() - new Date(execution.startedAt).getTime()) / 1000).toFixed(2)
         : null;
+
+    // Absolute timestamp shown on hover for precise debugging
+    const absoluteTime = format(new Date(execution.startedAt), "PPpp");
 
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen} className="group">
@@ -106,8 +118,8 @@ const NodeExecutionItem = ({ execution }: { execution: NodeExecution }) => {
                     </button>
                 </CollapsibleTrigger>
 
-                <div className="flex items-center justify-center p-1.5 bg-background rounded-md shadow-sm border">
-                    {getStatusIcon(execution.status)}
+                <div className="flex items-center justify-center size-7 bg-background rounded-md shadow-sm border shrink-0">
+                    <ExecutionStatusIcon status={execution.status} />
                 </div>
 
                 <div className="flex-1 min-w-0 flex items-center justify-between gap-4">
@@ -118,7 +130,10 @@ const NodeExecutionItem = ({ execution }: { execution: NodeExecution }) => {
                         <div className="flex items-center text-xs text-muted-foreground gap-2">
                             <span>{execution.type}</span>
                             <span>•</span>
-                            <span>{formatDistanceToNow(new Date(execution.startedAt), { addSuffix: true })}</span>
+                            {/* Relative time; hover shows the absolute timestamp for precision */}
+                            <span title={absoluteTime}>
+                                {formatDistanceToNow(new Date(execution.startedAt), { addSuffix: true })}
+                            </span>
                         </div>
                     </div>
 
@@ -149,7 +164,8 @@ const NodeExecutionItem = ({ execution }: { execution: NodeExecution }) => {
 
                         <div className="grid md:grid-cols-2 gap-4">
                             <JsonViewer data={execution.input} label="Input (Context)" />
-                            {execution.status === ExecutionStatus.SUCCESS && (
+                            {/* Show output for both SUCCESS and FAILED — partial output on failure aids debugging */}
+                            {execution.output && (
                                 <JsonViewer data={execution.output} label="Output (Result)" />
                             )}
                         </div>
@@ -157,8 +173,8 @@ const NodeExecutionItem = ({ execution }: { execution: NodeExecution }) => {
                 </div>
             </CollapsibleContent>
         </Collapsible>
-    )
-}
+    );
+};
 
 export const NodeExecutionList = ({ executions }: { executions: NodeExecution[] }) => {
     if (!executions || executions.length === 0) return null;
@@ -173,11 +189,10 @@ export const NodeExecutionList = ({ executions }: { executions: NodeExecution[] 
             </div>
 
             <div className="space-y-3 relative before:absolute before:inset-0 before:ml-[23px] before:w-px before:bg-border/50 before:-z-10">
-                {/* The vertical line logic above is a simple connection line, might need tweaking for perfect alignment */}
                 {executions.map((execution) => (
                     <NodeExecutionItem key={execution.id} execution={execution} />
                 ))}
             </div>
         </div>
-    )
-}
+    );
+};

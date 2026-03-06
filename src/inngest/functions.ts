@@ -1,6 +1,7 @@
 import { NonRetriableError } from "inngest";
 import { inngest } from "./client";
 import { genericChannel } from "@/inngest/channels/generic";
+import { executionChannel } from "@/inngest/channels/execution-channel";
 import prisma from "@/lib/db";
 import { topologicalSort } from "./utils";
 import { ExecutionStatus, NodeType } from "@/generated/prisma/client";
@@ -22,13 +23,14 @@ import { emailChannel } from "./channels/email";
 import { conditionChannel } from "./channels/condition";
 import { cronTriggerChannel } from "./channels/cron-trigger";
 import { buildAdjacencyMap } from "./utils";
+import { workflowChannel } from "./channels/workflow-channel";
 
 export const executeWorkflow = inngest.createFunction(
     {
         id: "execute-workflow",
         retries: 0, // TODO remove in production
         onFailure: async ({ event, step }) => {
-            return prisma.execution.update({
+            const result = await prisma.execution.update({
                 where: { inngestEventId: event.data.event.id },
                 data: {
                     status: ExecutionStatus.FAILED,
@@ -36,6 +38,18 @@ export const executeWorkflow = inngest.createFunction(
                     errorStack: event.data.error.stack,
                 },
             });
+
+            // Broadcast failure to workflow history instantly
+            await inngest.send({
+                name: "workflow/execution.updated",
+                data: {
+                    workflowId: result.workflowId,
+                    executionId: result.id,
+                    status: ExecutionStatus.FAILED,
+                }
+            });
+
+            return result;
         },
     },
     {
@@ -58,6 +72,9 @@ export const executeWorkflow = inngest.createFunction(
             conditionChannel(),
             genericChannel(),
             cronTriggerChannel(),
+            // Execution channel: function-based factory — Inngest handles routing per executionId
+            executionChannel,
+            workflowChannel,
         ],
     },
     async ({ event, step, publish }) => {
@@ -73,12 +90,28 @@ export const executeWorkflow = inngest.createFunction(
         }
 
         const execution = await step.run("create-execution", async () => {
-            return prisma.execution.create({
-                data: {
+            const res = await prisma.execution.upsert({
+                where: { inngestEventId },
+                update: {
+                    status: ExecutionStatus.RUNNING,
+                },
+                create: {
                     workflowId,
                     inngestEventId,
+                    triggerType: event.data.triggerType ?? "manual",
+                    status: ExecutionStatus.RUNNING,
                 },
             });
+
+            // Broadcast RUNNING status to workflow history instantly
+            await publish(
+                workflowChannel(workflowId).execution_update({
+                    executionId: res.id,
+                    status: ExecutionStatus.RUNNING,
+                })
+            );
+
+            return res;
         });
 
         const { sortedNodes, connections } = await step.run("prepare-workflow", async () => {
@@ -140,8 +173,14 @@ export const executeWorkflow = inngest.createFunction(
                 continue;
             }
 
-            // 1. Log START of node execution
+            // 1. Log START of node execution + publish realtime event
             await step.run(`start-node-${node.id}`, async () => {
+                await publish(
+                    executionChannel(execution.id).status({
+                        nodeId: node.id,
+                        status: "loading",
+                    })
+                );
                 return prisma.nodeExecution.create({
                     data: {
                         executionId: execution.id,
@@ -171,8 +210,14 @@ export const executeWorkflow = inngest.createFunction(
                 // Update context with result
                 context = result;
 
-                // 3. Log SUCCESS
+                // 3. Log SUCCESS + publish realtime event
                 await step.run(`complete-node-${node.id}`, async () => {
+                    await publish(
+                        executionChannel(execution.id).status({
+                            nodeId: node.id,
+                            status: "success",
+                        })
+                    );
                     return prisma.nodeExecution.updateMany({
                         where: {
                             executionId: execution.id,
@@ -187,9 +232,15 @@ export const executeWorkflow = inngest.createFunction(
                 });
 
             } catch (error: unknown) {
-                // 4. Log FAILURE
+                // 4. Log FAILURE + publish realtime event
                 await step.run(`fail-node-${node.id}`, async () => {
                     const errorMessage = error instanceof Error ? error.message : "Unknown error";
+                    await publish(
+                        executionChannel(execution.id).status({
+                            nodeId: node.id,
+                            status: "error",
+                        })
+                    );
                     return prisma.nodeExecution.updateMany({
                         where: {
                             executionId: execution.id,
@@ -243,7 +294,7 @@ export const executeWorkflow = inngest.createFunction(
         }
 
         await step.run("update-execution", async () => {
-            return prisma.execution.update({
+            const res = await prisma.execution.update({
                 where: { inngestEventId, workflowId },
                 data: {
                     status: ExecutionStatus.SUCCESS,
@@ -251,6 +302,16 @@ export const executeWorkflow = inngest.createFunction(
                     output: context as any, // Only casting final output to avoid DB JSON type issues if strictly typed
                 },
             });
+
+            // Broadcast SUCCESS status to workflow history instantly
+            await publish(
+                workflowChannel(workflowId).execution_update({
+                    executionId: res.id,
+                    status: ExecutionStatus.SUCCESS,
+                })
+            );
+
+            return res;
         });
 
         return {

@@ -2,6 +2,8 @@ import prisma from "@/lib/db";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import z from "zod";
 import { PAGINATION } from "@/config/constants";
+import { sendWorkflowExecution } from "@/inngest/utils";
+import { ExecutionStatus } from "@/generated/prisma/client";
 
 export const executionsRouters = createTRPCRouter({
     getOne: protectedProcedure
@@ -34,14 +36,16 @@ export const executionsRouters = createTRPCRouter({
                 .max(PAGINATION.MAX_PAGE_SIZE)
                 .default(PAGINATION.DEFAULT_PAGE_SIZE),
             workflowId: z.string().optional(),
+            status: z.string().optional(),
         })
         )
         .query(async ({ ctx, input }) => {
-            const { page, pageSize, workflowId } = input;
+            const { page, pageSize, workflowId, status } = input;
 
             const where = {
                 workflow: { userId: ctx.auth.user.id },
                 ...(workflowId ? { workflowId } : {}),
+                ...(status ? { status: status as ExecutionStatus } : {}),
             };
 
             const [items, totalCount] = await Promise.all([
@@ -79,5 +83,26 @@ export const executionsRouters = createTRPCRouter({
                 hasNextPage,
                 hasPreviousPage
             };
+        }),
+
+    rerun: protectedProcedure
+        .input(z.object({ id: z.string() }))
+        .mutation(async ({ ctx, input }) => {
+            const execution = await prisma.execution.findFirstOrThrow({
+                where: {
+                    id: input.id,
+                    workflow: { userId: ctx.auth.user.id },
+                },
+                select: {
+                    workflowId: true,
+                    triggerType: true,
+                },
+            });
+
+            return sendWorkflowExecution({
+                workflowId: execution.workflowId,
+                triggerType: execution.triggerType ?? "manual",
+                initialData: { rerun: true },
+            });
         }),
 });

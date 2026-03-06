@@ -11,53 +11,50 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { ClockIcon, Loader2Icon, ExternalLinkIcon, CheckCircle2Icon, XCircleIcon, CircleDashedIcon } from "lucide-react";
+import { ClockIcon, ExternalLinkIcon, LoaderCircle, XCircleIcon } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ExecutionStatus } from "@/generated/prisma/browser";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { ExecutionStatusIcon } from "../../executions/components/execution-status-icon";
 
-const getStatusIcon = (status: ExecutionStatus) => {
-    switch (status) {
-        case ExecutionStatus.SUCCESS:
-            return <CheckCircle2Icon className="size-4 text-green-600" />;
-        case ExecutionStatus.FAILED:
-            return <XCircleIcon className="size-4 text-red-600" />;
-        case ExecutionStatus.RUNNING:
-            return <Loader2Icon className="size-4 text-blue-600 animate-spin" />;
-        default:
-            return <CircleDashedIcon className="size-4 text-muted-foreground" />;
-    }
-}
+import { useWorkflowExecutionsRealtime } from "../../executions/hooks/use-workflow-executions-realtime";
+import { fetchWorkflowRealtimeToken } from "../../executions/actions";
 
 export const ExecutionHistoryButton = ({ workflowId }: { workflowId: string }) => {
     const trpc = useTRPC();
     const [isOpen, setIsOpen] = useState(false);
 
-    // Use regular query to avoid blocking main UI if history fails/loads
-    const { data: executions, isLoading, isError } = useQuery({
+    const refreshToken = useCallback(() => fetchWorkflowRealtimeToken(workflowId), [workflowId]);
+
+    // Live sync for history updates
+    useWorkflowExecutionsRealtime({
+        workflowId,
+        refreshToken,
+    });
+
+    const { data: executions, isLoading, isError, refetch } = useQuery({
         ...trpc.executions.getMany.queryOptions({
             workflowId,
-            pageSize: 20, // Fetch last 20 runs
+            pageSize: 20,
         }),
+        // Keep polling as a fallback, but realtime will handle the "instant" feeling
         refetchInterval: (query) => {
-            if (!isOpen) return false;
-
-            // If we are loading or have any running items, poll fast
-            const hasRunning = query.state.data?.items.some(
-                item => item.status === ExecutionStatus.RUNNING
+            const hasActive = query.state.data?.items.some(
+                item => item.status === ExecutionStatus.QUEUED || item.status === ExecutionStatus.RUNNING
             );
-
-            if (isLoading || hasRunning) {
-                return 1000;
-            }
-
-            // Otherwise poll slow to keep it fresh without hammering
-            return 5000;
-        }
+            return hasActive ? 1000 : 5000;
+        },
     });
+
+    // Immediately refetch when the sheet opens so the list is never stale
+    useEffect(() => {
+        if (isOpen) {
+            refetch();
+        }
+    }, [isOpen, refetch]);
 
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -78,7 +75,7 @@ export const ExecutionHistoryButton = ({ workflowId }: { workflowId: string }) =
                 <div className="flex-1 overflow-y-auto mt-6 -mr-6 pr-6">
                     {isLoading && !executions ? (
                         <div className="flex flex-col items-center justify-center py-10 gap-2 text-muted-foreground">
-                            <Loader2Icon className="size-8 animate-spin" />
+                            <LoaderCircle className="size-8 animate-spin" />
                             <p>Loading history...</p>
                         </div>
                     ) : isError ? (
@@ -108,7 +105,7 @@ export const ExecutionHistoryButton = ({ workflowId }: { workflowId: string }) =
                                                 "size-8 rounded-full flex items-center justify-center bg-muted",
                                                 execution.status === ExecutionStatus.RUNNING && "bg-blue-100 ring-2 ring-blue-100 ring-offset-2"
                                             )}>
-                                                {getStatusIcon(execution.status)}
+                                                <ExecutionStatusIcon status={execution.status} />
                                             </div>
                                             <div className="flex flex-col">
                                                 <div className="flex items-center gap-2">
