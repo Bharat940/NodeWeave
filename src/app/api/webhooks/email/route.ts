@@ -1,5 +1,6 @@
 import { sendWorkflowExecution } from "@/inngest/utils";
 import { type NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/db";
 
 // Normalized email data structure passed to workflows
 interface EmailTriggerData {
@@ -142,6 +143,18 @@ export async function POST(request: NextRequest) {
         if (!workflowId) {
             return NextResponse.json(
                 { error: "Missing required query parameter: workflowId" },
+                { status: 400 }
+            );
+        }
+
+        const workflow = await prisma.workflow.findUnique({
+            where: { id: workflowId },
+            select: { isActive: true }
+        });
+
+        if (!workflow?.isActive) {
+            return NextResponse.json(
+                { error: "Workflow is disabled" },
                 { status: 400 }
             );
         }

@@ -13,6 +13,7 @@ export const scheduler = inngest.createFunction(
             return prisma.node.findMany({
                 where: {
                     type: NodeType.CRON_TRIGGER,
+                    workflow: { isActive: true }
                 },
                 select: {
                     id: true,

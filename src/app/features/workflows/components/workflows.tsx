@@ -2,7 +2,7 @@
 
 import React, { Component, type ErrorInfo, type ReactNode } from "react";
 import { EmptyView, EntityContainer, EntityHeader, EntityItem, EntityList, EntityPagination, EntitySearch, ErrorView, LoadingView } from "@/components/entity-components";
-import { useCreateWorkflow, useRemoveWorkflow, useSuspenseWorkflows, useWorkflows } from "../hooks/use-workflows"
+import { useCreateWorkflow, useRemoveWorkflow, useSuspenseWorkflows, useWorkflows, useUpdateWorkflowStatus } from "../hooks/use-workflows"
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
 import { useRouter } from "next/navigation";
 import { useWorkflowParams } from "../hooks/use-workflows-params";
@@ -11,6 +11,7 @@ import { formatDistanceToNow } from "date-fns";
 import type { Workflow } from "@/generated/prisma/browser";
 import { WorkflowIcon } from "lucide-react";
 import { WorkflowUsageDisplay } from "./workflow-usage-display";
+import { Switch } from "@/components/ui/switch";
 
 // Class-based error boundary to catch errors during SSR
 interface ErrorBoundaryProps {
@@ -182,6 +183,7 @@ export const WorkFlowsEmpty = () => {
 export const WorkFlowItem = ({ data }: { data: Workflow }) => {
 
     const removeWorkflow = useRemoveWorkflow();
+    const updateStatus = useUpdateWorkflowStatus();
 
     const handleRemove = () => {
         removeWorkflow.mutate({ id: data.id })
@@ -201,6 +203,21 @@ export const WorkFlowItem = ({ data }: { data: Workflow }) => {
             image={
                 <div className="size-8 flex items-center justify-center">
                     <WorkflowIcon className="size-5 text-muted-foreground" />
+                </div>
+            }
+            actions={
+                <div 
+                    onClick={(e) => e.preventDefault()}
+                    className="flex items-center gap-2 mr-2"
+                >
+                    <span className="text-xs text-muted-foreground font-medium hidden sm:inline-block">
+                        {data.isActive ? "Active" : "Draft"}
+                    </span>
+                    <Switch 
+                        checked={data.isActive} 
+                        onCheckedChange={(checked) => updateStatus.mutate({ id: data.id, isActive: checked })}
+                        disabled={updateStatus.isPending || removeWorkflow.isPending}
+                    />
                 </div>
             }
             onRemove={handleRemove}

@@ -14,15 +14,10 @@ export const POST = async (req: NextRequest) => {
             );
         }
 
-        // Verify workflow exists and has a webhook trigger
-        const workflow = await prisma.workflow.findFirst({
+        // Verify workflow exists, is active, and has a webhook trigger
+        const workflow = await prisma.workflow.findUnique({
             where: {
                 id: workflowId,
-                nodes: {
-                    some: {
-                        type: "WEBHOOK"
-                    }
-                }
             },
             include: {
                 nodes: {
@@ -35,8 +30,22 @@ export const POST = async (req: NextRequest) => {
 
         if (!workflow) {
             return NextResponse.json(
-                { error: "Workflow not found or missing webhook trigger" },
+                { error: "Workflow not found" },
                 { status: 404 }
+            );
+        }
+
+        if (!workflow.isActive) {
+            return NextResponse.json(
+                { error: "Workflow is disabled" },
+                { status: 400 }
+            );
+        }
+
+        if (workflow.nodes.length === 0) {
+            return NextResponse.json(
+                { error: "Workflow does not have a webhook trigger" },
+                { status: 400 }
             );
         }
 

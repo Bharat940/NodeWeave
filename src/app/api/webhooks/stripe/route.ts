@@ -1,5 +1,6 @@
 import { sendWorkflowExecution } from "@/inngest/utils";
 import { type NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/db";
 
 export async function POST(request: NextRequest) {
     try {
@@ -10,6 +11,18 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({
                 success: false,
                 error: "Missing required query parameter: workflowId"
+            }, { status: 400 },);
+        }
+
+        const workflow = await prisma.workflow.findUnique({
+            where: { id: workflowId },
+            select: { isActive: true }
+        });
+
+        if (!workflow?.isActive) {
+            return NextResponse.json({
+                success: false,
+                error: "Workflow is disabled"
             }, { status: 400 },);
         }
 

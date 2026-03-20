@@ -29,6 +29,7 @@ NodeWeave is a modern SaaS automation platform that allows users to build sophis
 - Execution history and logging
 - **Real-Time Updates**: Live execution status tracking with adaptive polling for optimal performance
 - Event-driven architecture
+- **Workflow State Management**: Safely pause and resume workflows with Active/Inactive toggles
 - **Conditional Branching**: Support for If/Else logic and dynamic execution paths
 - **Scheduled Execution**: Native support for cron-based workflow scheduling
 
@@ -339,6 +340,7 @@ All API keys and sensitive credentials are encrypted using Cryptr before storage
 - Input validation using Zod schemas
 - Rate limiting on sensitive endpoints
 - Webhook signature verification
+- **Execution Safety**: Webhooks and scheduled triggers ignore requests for inactive workflows
 
 ## Deployment
 

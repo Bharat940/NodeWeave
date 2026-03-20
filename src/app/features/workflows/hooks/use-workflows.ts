@@ -128,3 +128,21 @@ export const useExecuteWorkflow = () => {
         }),
     );
 };
+
+export const useUpdateWorkflowStatus = () => {
+    const queryClient = useQueryClient();
+    const trpc = useTRPC();
+
+    return useMutation(
+        trpc.workflows.updateStatus.mutationOptions({
+            onSuccess: (data) => {
+                toast.success(`Workflow "${data.name}" ${data.isActive ? "activated" : "paused"}`);
+                queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
+                queryClient.invalidateQueries(trpc.workflows.getOne.queryOptions({ id: data.id }));
+            },
+            onError: (error) => {
+                toast.error(`Failed to update workflow status: ${error.message}`);
+            },
+        }),
+    );
+};

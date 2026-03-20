@@ -12,11 +12,30 @@ import {
 import { SaveIcon } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { useSuspenseWorkflow, useUpdateWorkflow, useUpdateWorkflowName } from "@/app/features/workflows/hooks/use-workflows";
+import { useSuspenseWorkflow, useUpdateWorkflow, useUpdateWorkflowName, useUpdateWorkflowStatus } from "@/app/features/workflows/hooks/use-workflows";
 import { Input } from "@/components/ui/input";
 import { useAtomValue } from "jotai";
 import { editorAtom } from "../store/atoms";
 import { ExecutionHistoryButton } from "./execution-history";
+import { Switch } from "@/components/ui/switch";
+
+export const EditorActiveToggle = ({ workflowId }: { workflowId: string }) => {
+    const { data: workflow } = useSuspenseWorkflow(workflowId);
+    const updateStatus = useUpdateWorkflowStatus();
+
+    return (
+        <div className="flex items-center gap-2 mr-2">
+            <span className="text-sm text-muted-foreground font-medium">
+                {workflow.isActive ? "Active" : "Draft"}
+            </span>
+            <Switch
+                checked={workflow.isActive}
+                onCheckedChange={(checked) => updateStatus.mutate({ id: workflowId, isActive: checked })}
+                disabled={updateStatus.isPending}
+            />
+        </div>
+    );
+};
 
 export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
     const editor = useAtomValue(editorAtom);
@@ -142,6 +161,7 @@ export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
             <SidebarTrigger />
             <EditorBreadCrumbs workflowId={workflowId} />
             <div className="ml-auto flex items-center gap-2">
+                <EditorActiveToggle workflowId={workflowId} />
                 <ExecutionHistoryButton workflowId={workflowId} />
                 <EditorSaveButton workflowId={workflowId} />
             </div>
