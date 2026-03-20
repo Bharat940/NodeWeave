@@ -4,7 +4,7 @@ import { genericChannel } from "@/inngest/channels/generic";
 import { executionChannel } from "@/inngest/channels/execution-channel";
 import prisma from "@/lib/db";
 import { topologicalSort } from "./utils";
-import { ExecutionStatus, NodeType } from "@/generated/prisma/client";
+import { ExecutionStatus, NodeType, Prisma } from "@/generated/prisma/client";
 import { getExecutor } from "@/app/features/executions/lib/executor-registry";
 import { httpRequestChannel } from "./channels/http-request";
 import { manualTriggerChannel } from "./channels/mannual-trigger";
@@ -98,12 +98,14 @@ export const executeWorkflow = inngest.createFunction(
                 where: { inngestEventId },
                 update: {
                     status: ExecutionStatus.RUNNING,
+                    initialData: event.data.initialData ? (event.data.initialData as Prisma.InputJsonValue) : undefined,
                 },
                 create: {
                     workflowId,
                     inngestEventId,
                     triggerType: event.data.triggerType ?? "manual",
                     status: ExecutionStatus.RUNNING,
+                    initialData: event.data.initialData ? (event.data.initialData as Prisma.InputJsonValue) : undefined,
                 },
             });
 

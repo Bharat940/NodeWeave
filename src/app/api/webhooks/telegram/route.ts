@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
         // Send to Inngest workflow
         await sendWorkflowExecution({
             workflowId,
+            triggerType: "telegram",
             initialData: {
                 telegram: triggerData,
             }

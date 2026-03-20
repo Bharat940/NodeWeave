@@ -111,6 +111,7 @@ export async function POST(request: NextRequest) {
         if (triggerData) {
             await sendWorkflowExecution({
                 workflowId,
+                triggerType: "whatsapp",
                 initialData: {
                     whatsapp: triggerData,
                 }

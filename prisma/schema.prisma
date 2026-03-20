@@ -187,6 +187,7 @@ enum ExecutionStatus {
 
 model Execution {
   id String @id @default(cuid())
+  initialData Json?
 
   workflowId String
   workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)

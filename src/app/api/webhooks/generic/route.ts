@@ -57,6 +57,7 @@ export const POST = async (req: NextRequest) => {
         // Trigger Workflow Execution directly
         await sendWorkflowExecution({
             workflowId,
+            triggerType: "webhook",
             initialData: {
                 webhook: {
                     body,

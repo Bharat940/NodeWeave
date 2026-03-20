@@ -13,7 +13,8 @@ NodeWeave is a modern SaaS automation platform that allows users to build sophis
 - Real-time workflow visualization
 - Connection validation and error handling
 - Auto-save functionality
-- Workflow execution tracking
+- Workflow execution tracking & live status
+- **Trigger Payload Visibility**: Inspect raw inbound webhook and trigger data directly in the dashboard
 
 ### Authentication & User Management
 - Secure authentication using Better Auth
@@ -30,6 +31,7 @@ NodeWeave is a modern SaaS automation platform that allows users to build sophis
 - **Real-Time Updates**: Live execution status tracking with adaptive polling for optimal performance
 - Event-driven architecture
 - **Workflow State Management**: Safely pause and resume workflows with Active/Inactive toggles
+- **Execution Replay**: Re-run failed webhooks or manual triggers
 - **Conditional Branching**: Support for If/Else logic and dynamic execution paths
 - **Scheduled Execution**: Native support for cron-based workflow scheduling
 

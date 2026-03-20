@@ -87,9 +87,10 @@ export async function POST(request: NextRequest) {
                 break;
         }
 
-        // Send to Inngest workflow
+        // Trigger Workflow Execution
         await sendWorkflowExecution({
             workflowId,
+            triggerType: "github",
             initialData: {
                 github: triggerData,
             }

@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
 
         await sendWorkflowExecution({
             workflowId,
+            triggerType: "stripe",
             initialData: {
                 stripe: stripeData,
             }

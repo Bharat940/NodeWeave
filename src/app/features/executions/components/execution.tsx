@@ -108,7 +108,8 @@ export const ExecutionView = ({
                         <Button
                             size="sm"
                             variant="outline"
-                            disabled={rerunMutation.isPending}
+                            disabled={rerunMutation.isPending || !execution.workflow.isActive}
+                            title={!execution.workflow.isActive ? "Workflow must be active to re-run" : ""}
                             onClick={() => rerunMutation.mutate({ id: executionId })}
                         >
                             {rerunMutation.isPending ? (
@@ -207,6 +208,17 @@ export const ExecutionView = ({
                                 </CollapsibleContent>
                             </Collapsible>
                         )}
+                    </div>
+                )}
+
+                {execution.initialData && (
+                    <div className="mt-6 p-4 bg-muted rounded-md border border-border">
+                        <p className="text-sm font-medium mb-2">
+                            Trigger Payload (Input)
+                        </p>
+                        <pre className="text-xs font-mono whitespace-pre-wrap break-all text-muted-foreground">
+                            {JSON.stringify(execution.initialData, null, 2)}
+                        </pre>
                     </div>
                 )}
 

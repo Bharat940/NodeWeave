@@ -15,7 +15,8 @@ export const executionsRouters = createTRPCRouter({
                     workflow: {
                         select: {
                             id: true,
-                            name: true
+                            name: true,
+                            isActive: true,
                         }
                     },
                     nodeExecutions: {
@@ -91,18 +92,22 @@ export const executionsRouters = createTRPCRouter({
             const execution = await prisma.execution.findFirstOrThrow({
                 where: {
                     id: input.id,
-                    workflow: { userId: ctx.auth.user.id },
+                    workflow: { 
+                        userId: ctx.auth.user.id,
+                        isActive: true
+                    },
                 },
                 select: {
                     workflowId: true,
                     triggerType: true,
+                    initialData: true,
                 },
             });
 
             return sendWorkflowExecution({
                 workflowId: execution.workflowId,
                 triggerType: execution.triggerType ?? "manual",
-                initialData: { rerun: true },
+                initialData: execution.initialData as Record<string, unknown> || { rerun: true },
             });
         }),
 });

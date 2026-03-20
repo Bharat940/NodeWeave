@@ -201,8 +201,10 @@ export async function POST(request: NextRequest) {
         if (triggerData) {
             console.log(`[Email Webhook] Received from provider: ${triggerData.provider}, from: ${triggerData.from}, subject: ${triggerData.subject}`);
 
+            // Trigger Workflow Execution
             await sendWorkflowExecution({
                 workflowId,
+                triggerType: "email",
                 initialData: {
                     email: triggerData,
                 },

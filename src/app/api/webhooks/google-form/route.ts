@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
 
         await sendWorkflowExecution({
             workflowId,
+            triggerType: "google-form",
             initialData: {
                 googleForm: formData,
             }
