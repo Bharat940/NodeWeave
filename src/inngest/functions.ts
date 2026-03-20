@@ -24,11 +24,13 @@ import { conditionChannel } from "./channels/condition";
 import { cronTriggerChannel } from "./channels/cron-trigger";
 import { buildAdjacencyMap } from "./utils";
 import { workflowChannel } from "./channels/workflow-channel";
+import { transformerChannel } from "./channels/transformer";
+import { codeChannel } from "./channels/code";
 
 export const executeWorkflow = inngest.createFunction(
     {
         id: "execute-workflow",
-        retries: 0, // TODO remove in production
+        retries: process.env.NODE_ENV === "production" ? 3 : 0,
         onFailure: async ({ event, step }) => {
             const result = await prisma.execution.update({
                 where: { inngestEventId: event.data.event.id },
@@ -75,6 +77,8 @@ export const executeWorkflow = inngest.createFunction(
             // Execution channel: function-based factory — Inngest handles routing per executionId
             executionChannel,
             workflowChannel,
+            transformerChannel(),
+            codeChannel(),
         ],
     },
     async ({ event, step, publish }) => {

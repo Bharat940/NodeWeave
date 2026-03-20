@@ -22,6 +22,8 @@ import { EmailTriggerNode } from "@/app/features/triggers/components/email-trigg
 import { WebhookTriggerNode } from "@/app/features/triggers/components/webhook-trigger/node";
 import { CronTriggerNode } from "@/app/features/triggers/components/cron-trigger/node";
 import { ConditionNode } from "@/app/features/executions/components/condition/node";
+import { TransformerNode } from "@/app/features/executions/components/transformer/node";
+import { CodeNode } from "@/app/features/executions/components/code/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -45,6 +47,8 @@ export const nodeComponents = {
     [NodeType.CONDITION]: ConditionNode,
     [NodeType.WEBHOOK]: WebhookTriggerNode,
     [NodeType.CRON_TRIGGER]: CronTriggerNode,
+    [NodeType.TRANSFORMER]: TransformerNode,
+    [NodeType.CODE]: CodeNode,
 } as const satisfies NodeTypes
 
 export type RegisteredNodeType = keyof typeof nodeComponents;

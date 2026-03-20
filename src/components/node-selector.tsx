@@ -8,6 +8,8 @@ import {
     MousePointerIcon,
     WebhookIcon,
     ClockIcon,
+    ArrowRightLeftIcon,
+    CodeIcon,
 } from "lucide-react";
 import React, { useCallback } from "react";
 import { toast } from "sonner";
@@ -92,6 +94,18 @@ const logicNodes: NodeTypeOption[] = [
         label: "If/Else",
         description: "Branch workflow based on a condition",
         icon: GitBranchIcon,
+    },
+    {
+        type: NodeType.TRANSFORMER,
+        label: "Data Transformer",
+        description: "Map, rename, and reshape data between workflow steps",
+        icon: ArrowRightLeftIcon,
+    },
+    {
+        type: NodeType.CODE,
+        label: "Code",
+        description: "Run custom JavaScript to transform workflow data",
+        icon: CodeIcon,
     },
 ];
 

@@ -133,6 +133,8 @@ enum NodeType {
   CONDITION
   WEBHOOK
   CRON_TRIGGER
+  TRANSFORMER
+  CODE
 }
 
 model Node {

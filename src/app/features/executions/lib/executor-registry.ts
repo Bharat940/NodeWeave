@@ -20,6 +20,8 @@ import { emailTriggerExecutor } from "../../triggers/components/email-trigger/ex
 import { conditionExecutor } from "../components/condition/executor";
 import { webhookTriggerExecutor } from "../../triggers/components/webhook-trigger/executor";
 import { cronTriggerExecutor } from "../../triggers/components/cron-trigger/executor";
+import { transformerExecutor } from "../components/transformer/executor";
+import { codeExecutor } from "../components/code/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor> = {
     [NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
@@ -43,6 +45,8 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
     [NodeType.CONDITION]: conditionExecutor,
     [NodeType.WEBHOOK]: webhookTriggerExecutor,
     [NodeType.CRON_TRIGGER]: cronTriggerExecutor,
+    [NodeType.TRANSFORMER]: transformerExecutor,
+    [NodeType.CODE]: codeExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor => {
