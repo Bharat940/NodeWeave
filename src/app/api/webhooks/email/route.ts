@@ -221,9 +221,11 @@ export async function POST(request: NextRequest) {
         }
     } catch (error) {
         console.error("[Email Webhook] Error processing request:", error);
+        const errorMessage = error instanceof Error ? error.message : "Internal server error";
+        const isQuotaError = errorMessage.includes("Execution quota exceeded");
         return NextResponse.json(
-            { success: false, error: "Failed to process email webhook" },
-            { status: 500 }
+            { success: false, error: errorMessage },
+            { status: isQuotaError ? 403 : 500 }
         );
     }
 }

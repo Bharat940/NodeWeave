@@ -9,7 +9,7 @@ import {
     BreadcrumbList,
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
-import { SaveIcon } from "lucide-react";
+import { Loader2, SaveIcon } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useSuspenseWorkflow, useUpdateWorkflow, useUpdateWorkflowName, useUpdateWorkflowStatus } from "@/app/features/workflows/hooks/use-workflows";
@@ -18,6 +18,7 @@ import { useAtomValue } from "jotai";
 import { editorAtom } from "../store/atoms";
 import { ExecutionHistoryButton } from "./execution-history";
 import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 
 export const EditorActiveToggle = ({ workflowId }: { workflowId: string }) => {
     const { data: workflow } = useSuspenseWorkflow(workflowId);
@@ -25,13 +26,17 @@ export const EditorActiveToggle = ({ workflowId }: { workflowId: string }) => {
 
     return (
         <div className="flex items-center gap-2 mr-2">
-            <span className="text-sm text-muted-foreground font-medium">
+            <span className={cn(
+                "text-sm text-muted-foreground font-medium flex items-center gap-1.5 transition-opacity",
+                updateStatus.isPending && "opacity-70"
+            )}>
+                {updateStatus.isPending && <Loader2 className="size-3.5 animate-spin text-blue-500" />}
                 {workflow.isActive ? "Active" : "Draft"}
             </span>
             <Switch
                 checked={workflow.isActive}
                 onCheckedChange={(checked) => updateStatus.mutate({ id: workflowId, isActive: checked })}
-                disabled={updateStatus.isPending}
+                className={cn(updateStatus.isPending && "opacity-50 transition-opacity")}
             />
         </div>
     );

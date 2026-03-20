@@ -39,9 +39,11 @@ export async function POST(request: NextRequest) {
         );
     } catch (error) {
         console.error("Google form webhook error", error);
+        const errorMessage = error instanceof Error ? error.message : "Internal server error";
+        const isQuotaError = errorMessage.includes("Execution quota exceeded");
         return NextResponse.json({
             success: false,
-            error: "Failed to process Google Form Submission"
-        }, { status: 500 },);
+            error: errorMessage
+        }, { status: isQuotaError ? 403 : 500 },);
     }
 }

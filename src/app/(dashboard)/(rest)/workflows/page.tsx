@@ -1,5 +1,5 @@
 import { requireAuth } from "@/lib/auth-utils";
-import { prefetchWorkflows } from "../../../features/workflows/server/prefetch";
+import { prefetchUsage, prefetchWorkflows } from "../../../features/workflows/server/prefetch";
 import { HydrateClient } from "../../../../trpc/server";
 import { WorkflowList, WorkflowsContainer } from "@/app/features/workflows/components/workflows";
 import type { SearchParams } from "nuqs/server";
@@ -16,7 +16,10 @@ const Page = async ({ searchParams }: Props) => {
 
     // Prefetch but don't fail if auth errors occur
     try {
-        await prefetchWorkflows(params);
+        await Promise.all([
+            prefetchWorkflows(params),
+            prefetchUsage(),
+        ]);
     } catch {
         // Silent fail - client will refetch
     }

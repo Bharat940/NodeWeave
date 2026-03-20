@@ -8,6 +8,9 @@ import { PAGINATION } from "@/config/constants";
 import { NodeType } from "@/generated/prisma/client";
 import { inngest } from "@/inngest/client";
 import { sendWorkflowExecution } from "@/inngest/utils";
+import { isUserPremium } from "@/lib/polar";
+import { WORKFLOW_LIMITS } from "@/config/constants";
+import { TRPCError } from "@trpc/server";
 
 export const workflowRouters = createTRPCRouter({
     execute: protectedProcedure
@@ -127,7 +130,31 @@ export const workflowRouters = createTRPCRouter({
 
     updateStatus: protectedProcedure
         .input(z.object({ id: z.string(), isActive: z.boolean() }))
-        .mutation(({ ctx, input }) => {
+        .mutation(async ({ ctx, input }) => {
+            const { id, isActive } = input;
+
+            // If activating a workflow, check for limits
+            if (isActive) {
+                const isPremium = await isUserPremium(ctx.auth.user.id);
+
+                if (!isPremium) {
+                    const activeCount = await prisma.workflow.count({
+                        where: {
+                            userId: ctx.auth.user.id,
+                            isActive: true,
+                            id: { not: id }, // Don't count the current one if it was already active
+                        },
+                    });
+
+                    if (activeCount >= WORKFLOW_LIMITS.MAX_ACTIVE_WORKFLOWS_FREE) {
+                        throw new TRPCError({
+                            code: "FORBIDDEN",
+                            message: `You've reached the limit of ${WORKFLOW_LIMITS.MAX_ACTIVE_WORKFLOWS_FREE} active workflows on the free tier. Upgrade to Pro for unlimited active workflows.`,
+                        });
+                    }
+                }
+            }
+
             return prisma.workflow.update({
                 where: { id: input.id, userId: ctx.auth.user.id },
                 data: { isActive: input.isActive }
@@ -216,4 +243,40 @@ export const workflowRouters = createTRPCRouter({
                 hasPreviousPage
             };
         }),
+
+    getUsage: protectedProcedure.query(async ({ ctx }) => {
+        const userId = ctx.auth.user.id;
+        const now = new Date();
+        const month = now.getMonth() + 1;
+        const year = now.getFullYear();
+
+        const [usage, activeCount, totalCount] = await Promise.all([
+            prisma.userUsage.findUnique({
+                where: {
+                    userId_month_year: {
+                        userId,
+                        month,
+                        year,
+                    },
+                },
+            }),
+            prisma.workflow.count({
+                where: {
+                    userId,
+                    isActive: true,
+                },
+            }),
+            prisma.workflow.count({
+                where: {
+                    userId,
+                },
+            }),
+        ]);
+
+        return {
+            executionsCount: usage?.executionsCount || 0,
+            activeWorkflowsCount: activeCount,
+            totalWorkflowsCount: totalCount,
+        };
+    }),
 });

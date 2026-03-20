@@ -48,7 +48,61 @@ export const topologicalSort = (
     return sortedNodeIds.map((id) => nodeMap.get(id)!).filter(Boolean);
 };
 
-import { workflowChannel } from "./channels/workflow-channel";
+import { isUserPremium } from "@/lib/polar";
+import { WORKFLOW_LIMITS } from "@/config/constants";
+
+async function checkAndIncrementExecutionUsage(userId: string) {
+    const isPremium = await isUserPremium(userId);
+
+    // Premium users have unlimited executions
+    if (isPremium) {
+        return;
+    }
+
+    const now = new Date();
+    const month = now.getMonth() + 1; // 1-12
+    const year = now.getFullYear();
+
+    // Check current usage BEFORE incrementing
+    const currentUsage = await prisma.userUsage.findUnique({
+        where: {
+            userId_month_year: {
+                userId,
+                month,
+                year,
+            },
+        },
+        select: {
+            executionsCount: true,
+        },
+    });
+
+    if (currentUsage && currentUsage.executionsCount >= WORKFLOW_LIMITS.FREE_USER_MAX_EXECUTIONS) {
+        throw new Error(`Execution quota exceeded. Free tier limit is ${WORKFLOW_LIMITS.FREE_USER_MAX_EXECUTIONS} executions per month.`);
+    }
+
+    // Safely increment the count
+    await prisma.userUsage.upsert({
+        where: {
+            userId_month_year: {
+                userId,
+                month,
+                year,
+            },
+        },
+        update: {
+            executionsCount: {
+                increment: 1,
+            },
+        },
+        create: {
+            userId,
+            month,
+            year,
+            executionsCount: 1,
+        },
+    });
+}
 
 export const sendWorkflowExecution = async (
     data: {
@@ -57,6 +111,15 @@ export const sendWorkflowExecution = async (
         [key: string]: any;
     }
 ) => {
+    // 1. Find the workflow owner
+    const workflow = await prisma.workflow.findUniqueOrThrow({
+        where: { id: data.workflowId },
+        select: { userId: true },
+    });
+
+    // 2. Check and increment usage (Throws if over limit)
+    await checkAndIncrementExecutionUsage(workflow.userId);
+
     const eventId = createId();
 
     // Pre-create the execution record immediately with QUEUED status

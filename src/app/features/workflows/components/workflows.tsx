@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Component, type ErrorInfo, type ReactNode } from "react";
+import React, { Component, Suspense, type ErrorInfo, type ReactNode } from "react";
 import { EmptyView, EntityContainer, EntityHeader, EntityItem, EntityList, EntityPagination, EntitySearch, ErrorView, LoadingView } from "@/components/entity-components";
 import { useCreateWorkflow, useRemoveWorkflow, useSuspenseWorkflows, useWorkflows, useUpdateWorkflowStatus } from "../hooks/use-workflows"
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
@@ -9,9 +9,10 @@ import { useWorkflowParams } from "../hooks/use-workflows-params";
 import { useEntitySearch } from "@/hooks/use-entity-search";
 import { formatDistanceToNow } from "date-fns";
 import type { Workflow } from "@/generated/prisma/browser";
-import { WorkflowIcon } from "lucide-react";
 import { WorkflowUsageDisplay } from "./workflow-usage-display";
 import { Switch } from "@/components/ui/switch";
+import { Loader2, WorkflowIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Class-based error boundary to catch errors during SSR
 interface ErrorBoundaryProps {
@@ -56,16 +57,8 @@ export const WorkflowsSearch = () => {
     )
 }
 
-export const WorkflowList = () => {
-    const { data: workflows, isLoading, isError } = useWorkflows();
-
-    if (isLoading) {
-        return <WorkflowsLoading />;
-    }
-
-    if (isError || !workflows) {
-        return <WorkflowsError />;
-    }
+const WorkflowListContent = () => {
+    const { data: workflows } = useSuspenseWorkflows();
 
     return (
         <EntityList
@@ -76,6 +69,16 @@ export const WorkflowList = () => {
         />
     )
 };
+
+export const WorkflowList = () => {
+    return (
+        <WorkflowListErrorBoundary>
+            <Suspense fallback={<WorkflowsLoading />}>
+                <WorkflowListContent />
+            </Suspense>
+        </WorkflowListErrorBoundary>
+    )
+}
 
 export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
     const createWorkflow = useCreateWorkflow();
@@ -210,13 +213,18 @@ export const WorkFlowItem = ({ data }: { data: Workflow }) => {
                     onClick={(e) => e.preventDefault()}
                     className="flex items-center gap-2 mr-2"
                 >
-                    <span className="text-xs text-muted-foreground font-medium hidden sm:inline-block">
+                    <span className={cn(
+                        "text-xs text-muted-foreground font-medium hidden sm:flex items-center gap-1.5 transition-opacity",
+                        updateStatus.isPending && "opacity-70"
+                    )}>
+                        {updateStatus.isPending && <Loader2 className="size-3 animate-spin text-blue-500" />}
                         {data.isActive ? "Active" : "Draft"}
                     </span>
                     <Switch 
                         checked={data.isActive} 
                         onCheckedChange={(checked) => updateStatus.mutate({ id: data.id, isActive: checked })}
-                        disabled={updateStatus.isPending || removeWorkflow.isPending}
+                        disabled={removeWorkflow.isPending}
+                        className={cn(updateStatus.isPending && "opacity-50 transition-opacity")}
                     />
                 </div>
             }

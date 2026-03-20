@@ -7,5 +7,7 @@ export const PAGINATION = {
 
 export const WORKFLOW_LIMITS = {
     FREE_USER_MAX_WORKFLOWS: 10,
+    MAX_ACTIVE_WORKFLOWS_FREE: 3,
+    FREE_USER_MAX_EXECUTIONS: 100,
     SOFT_LIMIT_WARNING_THRESHOLD: 8, // Show warning at 8+ workflows
 }

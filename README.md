@@ -34,6 +34,7 @@ NodeWeave is a modern SaaS automation platform that allows users to build sophis
 - **Execution Replay**: Re-run failed webhooks or manual triggers
 - **Conditional Branching**: Support for If/Else logic and dynamic execution paths
 - **Scheduled Execution**: Native support for cron-based workflow scheduling
+- **Usage Metering & Quotas**: Built-in monthly execution tracking and active-workflow capping for SaaS tiers
 
 
 ### Credential Management

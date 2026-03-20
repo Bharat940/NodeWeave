@@ -74,9 +74,13 @@ export const POST = async (req: NextRequest) => {
 
     } catch (error) {
         console.error("Error triggering webhook workflow:", error);
+        
+        const errorMessage = error instanceof Error ? error.message : "Internal server error";
+        const isQuotaError = errorMessage.includes("Execution quota exceeded");
+
         return NextResponse.json(
-            { error: "Internal server error" },
-            { status: 500 }
+            { error: errorMessage },
+            { status: isQuotaError ? 403 : 500 }
         );
     }
 }
