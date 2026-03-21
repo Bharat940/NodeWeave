@@ -89,6 +89,7 @@ Control flow nodes that manage execution paths:
 - **If/Else Condition**: Branch workflows based on dynamic conditions (supports operators like `equals`, `contains`, `greater_than`, etc.)
 - **Data Transformer**: Map, rename, and reshape data between workflow steps using Handlebars templates
 - **Custom Code (JS)**: Run secure, sandboxed JavaScript code (via WebAssembly QuickJS engine) to safely transform workflow data without RCE vulnerabilities
+- **Delay / Wait**: Pause workflow execution for a configured duration (seconds, minutes, hours, days) before continuing to the next step
 
 **Note**: Additional execution nodes and integrations are planned for future releases.
 
