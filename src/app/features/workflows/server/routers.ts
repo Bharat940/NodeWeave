@@ -1,4 +1,5 @@
 import { generateSlug } from "random-word-slugs"
+import { createId } from "@paralleldrive/cuid2";
 
 import prisma from "@/lib/db";
 import { createTRPCRouter, workflowLimitedProcedure, protectedProcedure } from "@/trpc/init";
@@ -30,21 +31,151 @@ export const workflowRouters = createTRPCRouter({
             return workflow;
         }),
 
-    create: workflowLimitedProcedure.mutation(({ ctx }) => {
-        return prisma.workflow.create({
-            data: {
-                name: generateSlug(),
-                userId: ctx.auth.user.id,
-                nodes: {
-                    create: {
-                        type: NodeType.INITIAL,
-                        position: { x: 0, y: 0 },
-                        name: NodeType.INITIAL,
+    create: workflowLimitedProcedure
+        .input(z.object({
+            templateId: z.string().optional(),
+            name: z.string().optional(),
+            description: z.string().optional(),
+            nodes: z.array(z.any()).optional(),
+            edges: z.array(z.any()).optional(),
+        }).optional())
+        .mutation(async ({ ctx, input }) => {
+            const templateId = input?.templateId;
+            let baseName = input?.name;
+
+            // 1. Determine base name based on creation type
+            if (!baseName) {
+                if (templateId) {
+                    const template = await prisma.workflowTemplate.findUniqueOrThrow({
+                        where: { id: templateId }
+                    });
+                    baseName = `Copy of ${template.name}`;
+                } else if (!input?.nodes) {
+                    // Blank workflow
+                    baseName = generateSlug();
+                } else {
+                    // Manual/Showcase - if no name is provided, default to a slug
+                    baseName = generateSlug();
+                }
+            }
+
+            let finalName = baseName;
+
+            // 2. Incremental numbering for deduplication per user
+            const existingWorkflows = await prisma.workflow.findMany({
+                where: {
+                    userId: ctx.auth.user.id,
+                    name: { startsWith: baseName }
+                },
+                select: { name: true }
+            });
+
+            if (existingWorkflows.some(w => w.name === baseName)) {
+                let counter = 1;
+                while (existingWorkflows.some(w => w.name === `${baseName} (${counter})`)) {
+                    counter++;
+                }
+                finalName = `${baseName} (${counter})`;
+            }
+
+            // 1. Handle template-based creation if only ID is provided
+            if (templateId && !input?.nodes) {
+                const template = await prisma.workflowTemplate.findUniqueOrThrow({
+                    where: { id: templateId }
+                });
+
+                const templateNodes = (template.nodes || []) as any[];
+                const templateConnections = (template.connections || []) as any[];
+
+                const idMap = new Map<string, string>();
+                templateNodes.forEach(node => {
+                    const originalId = node.originalId || node.id;
+                    idMap.set(originalId, createId());
+                });
+
+                const clonedNodes = templateNodes.map(node => {
+                    const originalId = node.originalId || node.id;
+                    return {
+                        id: idMap.get(originalId)!,
+                        name: node.name || node.type,
+                        type: node.type as NodeType,
+                        position: node.position,
+                        data: node.data || {},
+                    };
+                });
+
+                const clonedConnections = templateConnections.map(conn => {
+                    return {
+                        id: createId(),
+                        fromNodeId: idMap.get(conn.fromNodeId)!,
+                        toNodeId: idMap.get(conn.toNodeId)!,
+                        fromOutput: conn.fromOutput || "main",
+                        toInput: conn.toInput || "main",
+                    };
+                });
+
+                return await prisma.$transaction(async (tx) => {
+                    const newWorkflow = await tx.workflow.create({
+                        data: {
+                            name: finalName,
+                            userId: ctx.auth.user.id,
+                            nodes: { createMany: { data: clonedNodes } },
+                            connections: { createMany: { data: clonedConnections } }
+                        }
+                    });
+
+                    await tx.workflowTemplate.update({
+                        where: { id: templateId },
+                        data: { useCount: { increment: 1 } }
+                    });
+
+                    return newWorkflow;
+                });
+            }
+
+            // 2. Handle manual injection (e.g. from Showcase after client-side remapping)
+            if (input?.nodes) {
+                const manualNodes = input.nodes.map((n: any) => ({
+                    id: n.id || createId(),
+                    name: n.name || n.type || "unknown",
+                    type: n.type as NodeType,
+                    position: n.position,
+                    data: n.data || {},
+                }));
+
+                const manualEdges = (input.edges || []).map((e: any) => ({
+                    id: createId(),
+                    fromNodeId: e.source, // Mapping from ReactFlow 'source'/'target' back to 'fromNodeId'/'toNodeId'
+                    toNodeId: e.target,
+                    fromOutput: e.sourceHandle || "main",
+                    toInput: e.targetHandle || "main",
+                }));
+
+                return await prisma.workflow.create({
+                    data: {
+                        name: finalName,
+                        userId: ctx.auth.user.id,
+                        nodes: { createMany: { data: manualNodes } },
+                        connections: { createMany: { data: manualEdges } }
+                    }
+                });
+            }
+
+            // 3. Standard blank workflow creation
+            return prisma.workflow.create({
+                data: {
+                    name: finalName,
+                    userId: ctx.auth.user.id,
+                    nodes: {
+                        create: {
+                            type: NodeType.INITIAL,
+                            position: { x: 0, y: 0 },
+                            name: NodeType.INITIAL,
+                        },
                     },
                 },
-            },
-        });
-    }),
+            });
+        }),
 
     remove: protectedProcedure.input(z.object({ id: z.string() })).mutation(({ ctx, input }) => {
         return prisma.workflow.delete({

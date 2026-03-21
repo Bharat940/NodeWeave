@@ -9,9 +9,12 @@ import {
     BreadcrumbList,
     BreadcrumbSeparator
 } from "@/components/ui/breadcrumb"
-import { Loader2, SaveIcon } from "lucide-react";
+import { Loader2, SaveIcon, ShareIcon, LayoutTemplate } from "lucide-react";
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { PublishDialog } from "@/app/features/templates/components/publish-dialog";
+import { EditorTemplateDialog } from "@/app/features/templates/components/editor-template-dialog";
+import { authClient } from "@/lib/auth-client";
 import { useSuspenseWorkflow, useUpdateWorkflow, useUpdateWorkflowName, useUpdateWorkflowStatus } from "@/app/features/workflows/hooks/use-workflows";
 import { Input } from "@/components/ui/input";
 import { useAtomValue } from "jotai";
@@ -160,12 +163,47 @@ export const EditorBreadCrumbs = ({ workflowId }: { workflowId: string }) => {
     )
 }
 
+export const EditorPublishButton = ({ workflowId }: { workflowId: string }) => {
+    const { data: session } = authClient.useSession();
+    const [isOpen, setIsOpen] = useState(false);
+
+    if (session?.user?.role !== "admin") {
+        return null;
+    }
+
+    return (
+        <>
+            <PublishDialog workflowId={workflowId} open={isOpen} onOpenChange={setIsOpen} />
+            <Button variant="outline" size="sm" onClick={() => setIsOpen(true)}>
+                <ShareIcon className="size-4 mr-2" />
+                <span className="hidden sm:inline">Publish Template</span>
+            </Button>
+        </>
+    );
+};
+
+export const EditorApplyTemplateButton = () => {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <>
+            <EditorTemplateDialog open={isOpen} onOpenChange={setIsOpen} />
+            <Button variant="outline" size="sm" onClick={() => setIsOpen(true)}>
+                <LayoutTemplate className="size-4 mr-2" />
+                <span className="hidden sm:inline">Apply Template</span>
+            </Button>
+        </>
+    );
+};
+
 export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
     return (
         <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 bg-background">
             <SidebarTrigger />
             <EditorBreadCrumbs workflowId={workflowId} />
             <div className="ml-auto flex items-center gap-2">
+                <EditorApplyTemplateButton />
+                <EditorPublishButton workflowId={workflowId} />
                 <EditorActiveToggle workflowId={workflowId} />
                 <ExecutionHistoryButton workflowId={workflowId} />
                 <EditorSaveButton workflowId={workflowId} />

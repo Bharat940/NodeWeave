@@ -1,5 +1,6 @@
 import { checkout, polar, portal } from "@polar-sh/better-auth";
 import { betterAuth } from "better-auth";
+import { admin } from "better-auth/plugins";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "@/lib/db";
 import { polarClient } from "./polar";
@@ -20,6 +21,7 @@ export const auth = betterAuth({
     },
   },
   plugins: [
+    admin(),
     polar({
       client: polarClient,
       createCustomerOnSignUp: true,

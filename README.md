@@ -13,8 +13,11 @@ NodeWeave is a modern SaaS automation platform that allows users to build sophis
 - Real-time workflow visualization
 - Connection validation and error handling
 - Auto-save functionality
-- Workflow execution tracking & live status
+- **Execution History Replay**: Re-run failed webhooks or manual triggers with original payloads
+- **Template Management (Admin)**: Create, publish, edit, and delete community templates directly from any workflow
 - **Trigger Payload Visibility**: Inspect raw inbound webhook and trigger data directly in the dashboard
+- **Community Template Gallery**: Discover and browse pre-built automation scenarios with rich metadata and usage tracking
+- **Interactive Template Showcase**: Deep-dive into template logic with an interactive React Flow preview before cloning
 
 ### Authentication & User Management
 - Secure authentication using Better Auth

@@ -1,10 +1,10 @@
 "use client";
 
-import React, { Component, Suspense, type ErrorInfo, type ReactNode } from "react";
+import React, { Component, Suspense, useState, type ErrorInfo, type ReactNode } from "react";
 import { EmptyView, EntityContainer, EntityHeader, EntityItem, EntityList, EntityPagination, EntitySearch, ErrorView, LoadingView } from "@/components/entity-components";
-import { useCreateWorkflow, useRemoveWorkflow, useSuspenseWorkflows, useWorkflows, useUpdateWorkflowStatus } from "../hooks/use-workflows"
+import { TemplateDialog } from "@/app/features/templates/components/template-dialog";
+import { useRemoveWorkflow, useSuspenseWorkflows, useWorkflows, useUpdateWorkflowStatus } from "../hooks/use-workflows"
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
-import { useRouter } from "next/navigation";
 import { useWorkflowParams } from "../hooks/use-workflows-params";
 import { useEntitySearch } from "@/hooks/use-entity-search";
 import { formatDistanceToNow } from "date-fns";
@@ -53,7 +53,7 @@ export const WorkflowsSearch = () => {
     });
 
     return (
-        <EntitySearch value={searchValue} onChange={onSearchChange} placeholder="Seacrh Workflows..." />
+        <EntitySearch value={searchValue} onChange={onSearchChange} placeholder="Search Workflows..." />
     )
 }
 
@@ -81,31 +81,23 @@ export const WorkflowList = () => {
 }
 
 export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
-    const createWorkflow = useCreateWorkflow();
-    const router = useRouter()
-    const { handleError, modal } = useUpgradeModal();
+    const { modal } = useUpgradeModal();
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const handleCreate = () => {
-        createWorkflow.mutate(undefined, {
-            onSuccess: (data) => {
-                router.push(`/workflows/${data.id}`)
-            },
-            onError: (error) => {
-                handleError(error);
-            },
-        });
-    }
+        setIsDialogOpen(true);
+    };
 
     return (
         <>
             {modal}
+            <TemplateDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
             <EntityHeader
                 title="Workflows"
                 description="Create and manage your workflows"
                 onNew={handleCreate}
                 newButtonLabel="New workflow"
                 disabeled={disabled}
-                isCreating={createWorkflow.isPending}
             />
         </>
     );
@@ -157,24 +149,15 @@ export const WorkflowsError = () => {
 }
 
 export const WorkFlowsEmpty = () => {
-    const router = useRouter()
-    const createWorkflow = useCreateWorkflow();
-    const { handleError, modal } = useUpgradeModal();
+    const { modal } = useUpgradeModal();
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    const handleCreate = () => {
-        createWorkflow.mutate(undefined, {
-            onError: (error) => {
-                handleError(error);
-            },
-            onSuccess: (data) => {
-                router.push(`/workflows/${data.id}`)
-            }
-        });
-    };
+    const handleCreate = () => setIsDialogOpen(true);
 
     return (
         <>
             {modal}
+            <TemplateDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} />
             <EmptyView
                 onNew={handleCreate}
                 message="You haven't created any workflows yet. Get started by creating your first  workflow"
@@ -209,7 +192,7 @@ export const WorkFlowItem = ({ data }: { data: Workflow }) => {
                 </div>
             }
             actions={
-                <div 
+                <div
                     onClick={(e) => e.preventDefault()}
                     className="flex items-center gap-2 mr-2"
                 >
@@ -220,8 +203,8 @@ export const WorkFlowItem = ({ data }: { data: Workflow }) => {
                         {updateStatus.isPending && <Loader2 className="size-3 animate-spin text-blue-500" />}
                         {data.isActive ? "Active" : "Draft"}
                     </span>
-                    <Switch 
-                        checked={data.isActive} 
+                    <Switch
+                        checked={data.isActive}
                         onCheckedChange={(checked) => updateStatus.mutate({ id: data.id, isActive: checked })}
                         disabled={removeWorkflow.isPending}
                         className={cn(updateStatus.isPending && "opacity-50 transition-opacity")}

@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCardIcon, FolderOpenIcon, HistoryIcon, KeyIcon, LogOutIcon, StarIcon } from "lucide-react";
+import { CreditCardIcon, FolderOpenIcon, HistoryIcon, KeyIcon, LogOutIcon, StarIcon, LayoutTemplateIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -16,6 +16,11 @@ const menuitems = [
                 title: "Workflows",
                 icon: FolderOpenIcon,
                 url: "/workflows"
+            },
+            {
+                title: "Templates",
+                icon: LayoutTemplateIcon,
+                url: "/templates"
             },
             {
                 title: "Credentials",
