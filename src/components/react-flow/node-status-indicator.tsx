@@ -3,7 +3,7 @@ import { LoaderCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-export type NodeStatus = "loading" | "success" | "error" | "initial";
+export type NodeStatus = "loading" | "sleeping" | "success" | "error" | "initial";
 
 export type NodeStatusVariant = "overlay" | "border";
 
@@ -69,6 +69,20 @@ export const BorderLoadingIndicator = ({
   );
 };
 
+export const SleepingBorderIndicator = ({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) => {
+  return (
+    <StatusBorder className={cn("border-amber-500/60 animate-pulse", className)}>
+      {children}
+    </StatusBorder>
+  );
+};
+
 const StatusBorder = ({
   children,
   className,
@@ -105,6 +119,8 @@ export const NodeStatusIndicator = ({
         default:
           return <>{children}</>;
       }
+    case "sleeping":
+      return <SleepingBorderIndicator className={className}>{children}</SleepingBorderIndicator>;
     case "success":
       return (
         <StatusBorder className={cn("border-green-700/50", className)}>{children}</StatusBorder>

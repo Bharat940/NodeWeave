@@ -2,7 +2,7 @@ import type { ComponentProps, HTMLAttributes } from "react";
 
 import { cn } from "@/lib/utils";
 import { NodeStatus } from "./node-status-indicator";
-import { CheckCircle2Icon, Loader2Icon, XCircleIcon } from "lucide-react";
+import { CheckCircle2Icon, Loader2Icon, MoonIcon, XCircleIcon } from "lucide-react";
 
 interface BaseNodeProp extends HTMLAttributes<HTMLDivElement> {
   status?: NodeStatus;
@@ -27,13 +27,16 @@ export function BaseNode({
       {props.children}
       {status === "error" && (
         <XCircleIcon className="absolute right-0.5 bottom-0.5 size-2 text-red-700 stroke-3" />
-      )}  
+      )}
       {status === "success" && (
         <CheckCircle2Icon className="absolute right-0.5 bottom-0.5 size-2 text-green-700 stroke-3" />
       )}
       {status === "loading" && (
         <Loader2Icon className="absolute -right-0.5 -bottom-0.5 size-2 text-blue-700 stroke-3 animate-spin" />
-      )}  
+      )}
+      {status === "sleeping" && (
+        <MoonIcon className="absolute right-0.5 bottom-0.5 size-2.5 text-amber-400 fill-amber-400" />
+      )}
     </div>
   );
 }

@@ -10,6 +10,7 @@ import {
     ClockIcon,
     ArrowRightLeftIcon,
     CodeIcon,
+    TimerIcon,
 } from "lucide-react";
 import React, { useCallback } from "react";
 import { toast } from "sonner";
@@ -106,6 +107,12 @@ const logicNodes: NodeTypeOption[] = [
         label: "Code",
         description: "Run custom JavaScript to transform workflow data",
         icon: CodeIcon,
+    },
+    {
+        type: NodeType.DELAY,
+        label: "Delay / Wait",
+        description: "Pause the workflow for a set amount of time",
+        icon: TimerIcon,
     },
 ];
 

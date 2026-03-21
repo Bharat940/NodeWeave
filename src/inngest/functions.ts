@@ -26,6 +26,7 @@ import { buildAdjacencyMap } from "./utils";
 import { workflowChannel } from "./channels/workflow-channel";
 import { transformerChannel } from "./channels/transformer";
 import { codeChannel } from "./channels/code";
+import { delayChannel } from "./channels/delay";
 
 export const executeWorkflow = inngest.createFunction(
     {
@@ -79,6 +80,7 @@ export const executeWorkflow = inngest.createFunction(
             workflowChannel,
             transformerChannel(),
             codeChannel(),
+            delayChannel(),
         ],
     },
     async ({ event, step, publish }) => {

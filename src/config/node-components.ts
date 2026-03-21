@@ -24,6 +24,7 @@ import { CronTriggerNode } from "@/app/features/triggers/components/cron-trigger
 import { ConditionNode } from "@/app/features/executions/components/condition/node";
 import { TransformerNode } from "@/app/features/executions/components/transformer/node";
 import { CodeNode } from "@/app/features/executions/components/code/node";
+import { DelayNode } from "@/app/features/executions/components/delay/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -49,6 +50,7 @@ export const nodeComponents = {
     [NodeType.CRON_TRIGGER]: CronTriggerNode,
     [NodeType.TRANSFORMER]: TransformerNode,
     [NodeType.CODE]: CodeNode,
+    [NodeType.DELAY]: DelayNode,
 } as const satisfies NodeTypes
 
 export type RegisteredNodeType = keyof typeof nodeComponents;

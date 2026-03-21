@@ -22,6 +22,7 @@ import { webhookTriggerExecutor } from "../../triggers/components/webhook-trigge
 import { cronTriggerExecutor } from "../../triggers/components/cron-trigger/executor";
 import { transformerExecutor } from "../components/transformer/executor";
 import { codeExecutor } from "../components/code/executor";
+import { delayExecutor } from "../components/delay/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor> = {
     [NodeType.MANUAL_TRIGGER]: manualTriggerExecutor,
@@ -47,6 +48,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
     [NodeType.CRON_TRIGGER]: cronTriggerExecutor,
     [NodeType.TRANSFORMER]: transformerExecutor,
     [NodeType.CODE]: codeExecutor,
+    [NodeType.DELAY]: delayExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor => {
