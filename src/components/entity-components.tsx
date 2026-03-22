@@ -33,10 +33,10 @@ type EntityHeaderProps = {
     isCreating?: boolean;
     hiddenNewButton?: boolean;
 } & (
-    | { onNew: () => void; newButtonHref?: never }
-    | { newButtonHref: string; onNew?: never }
-    | { onNew?: never; newButtonHref?: never }
-)
+        | { onNew: () => void; newButtonHref?: never }
+        | { newButtonHref: string; onNew?: never }
+        | { onNew?: never; newButtonHref?: never }
+    )
 
 export const EntityHeader = ({
     title,
@@ -62,16 +62,16 @@ export const EntityHeader = ({
                 <>
                     {onNew && !newButtonHref && (
                         <Button disabled={isCreating || disabeled} size="sm" onClick={onNew}>
-                            <PlusIcon className="size-4"/>
+                            <PlusIcon className="size-4" />
                             {newButtonLabel}
                         </Button>
                     )}
                     {newButtonHref && !onNew && (
                         <Button size="sm" asChild>
                             <Link href={newButtonHref as any} prefetch>
-                                <PlusIcon className="size-4"/>
+                                <PlusIcon className="size-4" />
                                 {newButtonLabel}
-                            </Link>  
+                            </Link>
                         </Button>
                     )}
                 </>
@@ -113,11 +113,11 @@ interface EntitySearchProps {
     placeholder?: string;
 };
 
-export const EntitySearch =({value, onChange, placeholder = "Search"}: EntitySearchProps) => {
+export const EntitySearch = ({ value, onChange, placeholder = "Search" }: EntitySearchProps) => {
     return (
         <div className="relative ml-auto">
             <SearchIcon className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input className="max-w-[200px] bg-background shadow-none border-border pl-8" placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)}/>
+            <Input className="max-w-[200px] bg-background shadow-none border-border pl-8" placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} />
         </div>
     )
 }
@@ -141,7 +141,7 @@ export const EntityPagination = ({
                 Page {page} of {totalPages || 1}
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">
-                <Button disabled={page === 1 || disabled} variant="outline" size="sm" onClick={() => onPageChange(Math.max(1, page-1))}>
+                <Button disabled={page === 1 || disabled} variant="outline" size="sm" onClick={() => onPageChange(Math.max(1, page - 1))}>
                     Previous
                 </Button>
                 <Button disabled={page === totalPages || totalPages === 0 || disabled} variant="outline" size="sm" onClick={() => onPageChange(Math.min(totalPages, page + 1))}>
@@ -156,11 +156,11 @@ interface StateViewProps {
     message?: string;
 };
 
-export const LoadingView = ({message}: StateViewProps) => {
+export const LoadingView = ({ message }: StateViewProps) => {
     return (
         <div className="flex justify-center items-center h-full flex-1 flex-col gap-y-4">
             <Loader2Icon className="size-6 animate-spin text-primary" />
-            { !!message && (
+            {!!message && (
                 <p className="text-sm text-muted-foreground">
                     {message}
                 </p>
@@ -170,11 +170,11 @@ export const LoadingView = ({message}: StateViewProps) => {
     );
 };
 
-export const ErrorView = ({message}: StateViewProps) => {
+export const ErrorView = ({ message }: StateViewProps) => {
     return (
         <div className="flex justify-center items-center h-full flex-1 flex-col gap-y-4">
             <AlertTriangleIcon className="size-6 text-primary" />
-            { !!message && (
+            {!!message && (
                 <p className="text-sm text-muted-foreground">
                     {message}
                 </p>
@@ -188,7 +188,7 @@ interface EmptyViewProps extends StateViewProps {
     onNew?: () => void
 };
 
-export const EmptyView = ({message, onNew}: EmptyViewProps) => {
+export const EmptyView = ({ message, onNew }: EmptyViewProps) => {
     return (
         <Empty className="border border-border bg-white">
             <EmptyHeader>
@@ -199,11 +199,11 @@ export const EmptyView = ({message, onNew}: EmptyViewProps) => {
             <EmptyTitle>
                 No Items
             </EmptyTitle>
-            { !!message &&(
-                    <EmptyDescription>
-                        {message}
-                    </EmptyDescription>
-                )
+            {!!message && (
+                <EmptyDescription>
+                    {message}
+                </EmptyDescription>
+            )
             }
             {!!onNew && (
                 <EmptyContent>
@@ -230,8 +230,8 @@ export function EntityList<T>({
     className,
     emptyView,
     getKey
-}: EntityListProps<T>){
-    if(items.length === 0 && emptyView) {
+}: EntityListProps<T>) {
+    if (items.length === 0 && emptyView) {
         return (
             <div className="flex flex-1 justify-center items-center">
                 <div className="max-w-sm mx-auto">{emptyView}</div>
@@ -271,7 +271,7 @@ export const EntityItem = ({
     onRemove,
     subtitle
 }: EntityItemProps) => {
-    
+
     const handleRemove = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -329,5 +329,5 @@ export const EntityItem = ({
                 </CardContent>
             </Card>
         </Link>
-    )  
+    )
 };

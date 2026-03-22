@@ -14,10 +14,10 @@ NodeWeave is a modern SaaS automation platform that allows users to build sophis
 - Connection validation and error handling
 - Auto-save functionality
 - **Execution History Replay**: Re-run failed webhooks or manual triggers with original payloads
-- **Template Management (Admin)**: Create, publish, edit, and delete community templates directly from any workflow
-- **Trigger Payload Visibility**: Inspect raw inbound webhook and trigger data directly in the dashboard
-- **Community Template Gallery**: Discover and browse pre-built automation scenarios with rich metadata and usage tracking
-- **Interactive Template Showcase**: Deep-dive into template logic with an interactive React Flow preview before cloning
+- **One-Click Template Publishing (Admin)**: Instantly turn any live workflow into a reusable community template with automatic credential stripping for maximum security.
+- **Trigger Payload Visibility**: Inspect raw inbound webhook and trigger data directly in the dashboard for easy debugging.
+- **Dynamic Template Gallery**: Browse 15+ pre-built automation scenarios with rich metadata and usage tracking.
+- **Interactive Template Showcase**: Preview full workflow logic and branching handles in a live React Flow viewer before cloning.
 
 ### Authentication & User Management
 - Secure authentication using Better Auth
@@ -89,9 +89,9 @@ Execution nodes that perform specific tasks:
 ### Logic Nodes
 Control flow nodes that manage execution paths:
 
-- **If/Else Condition**: Branch workflows based on dynamic conditions (supports operators like `equals`, `contains`, `greater_than`, etc.)
-- **Data Transformer**: Map, rename, and reshape data between workflow steps using Handlebars templates
-- **Custom Code (JS)**: Run secure, sandboxed JavaScript code (via WebAssembly QuickJS engine) to safely transform workflow data without RCE vulnerabilities
+- **If/Else Condition**: Visual branching logic with dedicated `source-true` and `source-false` handles for complex workflow paths.
+- **Data Transformer**: Map and reshape nested data structures between workflow steps using Handlebars templates.
+- **Custom Code (JS)**: Execute sandboxed JavaScript (QuickJS) with full **Variable Name Isolation** to safely reference logic results in downstream nodes.
 - **Delay / Wait**: Pause workflow execution for a configured duration (seconds, minutes, hours, days) before continuing to the next step
 
 **Note**: Additional execution nodes and integrations are planned for future releases.
@@ -139,8 +139,9 @@ Control flow nodes that manage execution paths:
 ### Workflow System
 - **Workflow**: Container for automation workflows
 - **Node**: Individual workflow nodes (triggers, actions, and logic)
-- **Connection**: Links between nodes defining execution flow
-- **Execution**: Workflow execution records with status tracking
+- **Connection**: Links between nodes defining execution flow with specific handle remapping
+- **WorkflowTemplate**: Master blueprints for community sharing with sanitized logic and metadata
+- **Execution**: Workflow execution records with status tracking and real-time state broadcasts
 
 ### Credentials
 - **Credential**: Encrypted API keys and authentication tokens

@@ -35,7 +35,7 @@ const formSchema = z.object({
     content: z
         .string()
         .min(1, "Message content is required"),
-    webhookUrl: z.string().min(1, "Webhook WRL is required"),
+    webhookUrl: z.string().min(1, "Webhook URL is required"),
 });
 
 export type SlackFormValues = z.infer<typeof formSchema>;
@@ -85,10 +85,10 @@ export const SlackDialog = ({
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
-                        Slack Configuratiob
+                        Slack Configuration
                     </DialogTitle>
                     <DialogDescription>
-                        Configure the Slack webhook settigs for this node.
+                        Configure the Slack webhook settings for this node.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>

@@ -37,7 +37,7 @@ const formSchema = z.object({
         .string()
         .min(1, "Message content is required")
         .max(2000, "Discord messages cannot exceed 2000 characters"),
-    webhookUrl: z.string().min(1, "Webhook WRL is required"),
+    webhookUrl: z.string().min(1, "Webhook URL is required"),
 });
 
 export type DiscordFormValues = z.infer<typeof formSchema>;
@@ -89,10 +89,10 @@ export const DiscordDialog = ({
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
-                        Discord Configuratiob
+                        Discord Configuration
                     </DialogTitle>
                     <DialogDescription>
-                        Configure the Discord webhook settigs for this node.
+                        Configure the Discord webhook settings for this node.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -173,7 +173,7 @@ export const DiscordDialog = ({
                                         />
                                     </FormControl>
                                     <FormDescription>
-                                        Override the webhook's default usernmae
+                                        Override the webhook's default username
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>

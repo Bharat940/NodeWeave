@@ -20,6 +20,16 @@ export const codeExecutor: NodeExecutor<CodeData> = async ({
         }),
     );
 
+    if (!data.variableName) {
+        await publish(
+            codeChannel().status({
+                nodeId,
+                status: "error",
+            }),
+        );
+        throw new NonRetriableError("Code Node: Variable name is missing");
+    }
+
     if (!data.code || data.code.trim() === "") {
         await publish(
             codeChannel().status({
@@ -107,7 +117,10 @@ export const codeExecutor: NodeExecutor<CodeData> = async ({
             }),
         );
 
-        return result;
+        return {
+            ...context,
+            [data.variableName]: result,
+        };
     } catch (error) {
         await publish(
             codeChannel().status({

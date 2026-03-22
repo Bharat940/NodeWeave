@@ -139,11 +139,57 @@ export const templateRouters = createTRPCRouter({
                 include: { nodes: true, connections: true }
             });
 
-            // Strip database specific IDs from nodes and connections to make them pure JSON config templates
+            // Define keys that should never be exported to public templates
+            const SENSITIVE_KEYS = [
+                "webhookUrl",
+                "accessToken",
+                "authToken",
+                "accountSid",
+                "botToken",
+                "chatId",
+                "smtpHost",
+                "smtpPort",
+                "smtpUsername",
+                "smtpPassword",
+                "apiKey",
+                "secret",
+                "token",
+                "password",
+                "phoneNumberId",
+                "fromNumber",
+                "toNumber",
+                "verifyToken",
+                "signature",
+                "privateKey",
+                "clientSecret",
+                "signingSecret"
+            ];
+
+            const sanitizeNodeData = (data: any): any => {
+                if (!data || typeof data !== 'object') return data;
+
+                // Explicitly handle arrays to prevent them from becoming objects
+                if (Array.isArray(data)) {
+                    return data.map(v => sanitizeNodeData(v));
+                }
+
+                const clean = { ...data };
+                for (const key of Object.keys(clean)) {
+                    if (SENSITIVE_KEYS.some(sk => key.toLowerCase().includes(sk.toLowerCase()))) {
+                        clean[key] = ""; // Strip sensitive value
+                    } else if (typeof clean[key] === 'object' && clean[key] !== null) {
+                        clean[key] = sanitizeNodeData(clean[key]);
+                    }
+                }
+                return clean;
+            };
+
+            // Strip database specific IDs and sensitive config from nodes
             const cleanNodes = workflow.nodes.map(n => {
-                const { id, workflowId, createdAt, updatedAt, ...cleanNodeData } = n as any;
+                const { id, workflowId, credentialId, createdAt, updatedAt, data, ...rest } = n as any;
                 return {
-                    ...cleanNodeData,
+                    ...rest,
+                    data: sanitizeNodeData(data),
                     originalId: id // Keep a reference to remap connections
                 };
             });

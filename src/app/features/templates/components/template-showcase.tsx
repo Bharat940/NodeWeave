@@ -64,6 +64,11 @@ export const TemplateShowcase = ({ templateId }: { templateId: string }) => {
         trpc.workflows.create.mutationOptions({
             onSuccess: (data: any) => {
                 toast.success("Workflow created from template!");
+                setTimeout(() => {
+                    toast.info("Please configure your own credentials and check API settings before trying to execute.", {
+                        duration: 6000,
+                    });
+                }, 1000);
                 router.push(`/workflows/${data.id}`);
             },
             onError: (err: any) => {

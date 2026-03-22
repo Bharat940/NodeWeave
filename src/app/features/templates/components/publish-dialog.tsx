@@ -9,8 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
+import { TemplateIcon } from "./template-icon";
 
 interface PublishDialogProps {
     workflowId: string;
@@ -50,7 +51,7 @@ export function PublishDialog({ workflowId, open, onOpenChange }: PublishDialogP
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
                 <form onSubmit={handleSubmit}>
                     <DialogHeader>
                         <DialogTitle>Publish Template</DialogTitle>
@@ -58,9 +59,9 @@ export function PublishDialog({ workflowId, open, onOpenChange }: PublishDialogP
                             Make this workflow available to all users. By publishing, its nodes and connections will be permanently saved as a public template.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="grid gap-4 py-4">
+                    <div className="grid gap-6 py-6">
                         <div className="grid gap-2">
-                            <Label htmlFor="name">Template Name</Label>
+                            <Label htmlFor="name" className="text-sm font-semibold">Template Name</Label>
                             <Input
                                 id="name"
                                 value={name}
@@ -68,30 +69,58 @@ export function PublishDialog({ workflowId, open, onOpenChange }: PublishDialogP
                                 placeholder="e.g. Stripe to Discord Notification"
                                 required
                                 minLength={3}
+                                className="h-10"
                             />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="description">Description</Label>
+                            <Label htmlFor="description" className="text-sm font-semibold">Description</Label>
                             <Textarea
                                 id="description"
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 placeholder="Briefly describe what this automation accomplishes..."
                                 required
+                                className="min-h-[100px] resize-none"
                             />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="icon">Representative Icon</Label>
+                            <Label htmlFor="icon" className="text-sm font-semibold">Representative Icon</Label>
                             <Select value={icon} onValueChange={setIcon}>
-                                <SelectTrigger>
+                                <SelectTrigger className="h-12 w-full">
                                     <SelectValue placeholder="Select icon..." />
                                 </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="layout">Layout (Default)</SelectItem>
-                                    <SelectItem value="github">GitHub</SelectItem>
-                                    <SelectItem value="stripe">Stripe</SelectItem>
-                                    <SelectItem value="email">Email</SelectItem>
-                                    <SelectItem value="clock">Clock/Cron</SelectItem>
+                                <SelectContent className="max-h-[300px]">
+                                    <SelectGroup>
+                                        <SelectLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pt-4 pb-2 px-3">Triggers</SelectLabel>
+                                        <SelectItem value="manual"><div className="flex items-center gap-3"><TemplateIcon name="manual" className="size-4" /> Manual Trigger</div></SelectItem>
+                                        <SelectItem value="webhook"><div className="flex items-center gap-3"><TemplateIcon name="webhook" className="size-4" /> Webhook Trigger</div></SelectItem>
+                                        <SelectItem value="cron"><div className="flex items-center gap-3"><TemplateIcon name="cron" className="size-4" /> Schedule (Cron)</div></SelectItem>
+                                        <SelectItem value="google-form"><div className="flex items-center gap-3"><TemplateIcon name="google-form" className="size-4" /> Google Form</div></SelectItem>
+                                        <SelectItem value="stripe"><div className="flex items-center gap-3"><TemplateIcon name="stripe" className="size-4" /> Stripe Payment</div></SelectItem>
+                                        <SelectItem value="github"><div className="flex items-center gap-3"><TemplateIcon name="github" className="size-4" /> GitHub Event</div></SelectItem>
+                                        <SelectItem value="email"><div className="flex items-center gap-3"><TemplateIcon name="email" className="size-4" /> Email Trigger</div></SelectItem>
+                                        <SelectItem value="whatsapp"><div className="flex items-center gap-3"><TemplateIcon name="whatsapp" className="size-4" /> WhatsApp</div></SelectItem>
+                                        <SelectItem value="telegram"><div className="flex items-center gap-3"><TemplateIcon name="telegram" className="size-4" /> Telegram</div></SelectItem>
+                                    </SelectGroup>
+
+                                    <SelectGroup>
+                                        <SelectLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pt-4 pb-2 px-3">AI & Messaging</SelectLabel>
+                                        <SelectItem value="gemini"><div className="flex items-center gap-3"><TemplateIcon name="gemini" className="size-4" /> Google Gemini</div></SelectItem>
+                                        <SelectItem value="openai"><div className="flex items-center gap-3"><TemplateIcon name="openai" className="size-4" /> OpenAI</div></SelectItem>
+                                        <SelectItem value="anthropic"><div className="flex items-center gap-3"><TemplateIcon name="anthropic" className="size-4" /> Anthropic Claude</div></SelectItem>
+                                        <SelectItem value="discord"><div className="flex items-center gap-3"><TemplateIcon name="discord" className="size-4" /> Discord Bot</div></SelectItem>
+                                        <SelectItem value="slack"><div className="flex items-center gap-3"><TemplateIcon name="slack" className="size-4" /> Slack Bot</div></SelectItem>
+                                    </SelectGroup>
+
+                                    <SelectGroup>
+                                        <SelectLabel className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground pt-4 pb-2 px-3">Logic & Flow</SelectLabel>
+                                        <SelectItem value="condition"><div className="flex items-center gap-3"><TemplateIcon name="condition" className="size-4" /> If/Else Condition</div></SelectItem>
+                                        <SelectItem value="transformer"><div className="flex items-center gap-3"><TemplateIcon name="transformer" className="size-4" /> Data Transformer</div></SelectItem>
+                                        <SelectItem value="code"><div className="flex items-center gap-3"><TemplateIcon name="code" className="size-4" /> JS Code Engine</div></SelectItem>
+                                        <SelectItem value="delay"><div className="flex items-center gap-3"><TemplateIcon name="delay" className="size-4" /> Delay/Wait</div></SelectItem>
+                                        <SelectItem value="http"><div className="flex items-center gap-3"><TemplateIcon name="http" className="size-4" /> HTTP Request</div></SelectItem>
+                                        <SelectItem value="layout"><div className="flex items-center gap-3"><TemplateIcon name="layout" className="size-4" /> Template Layout</div></SelectItem>
+                                    </SelectGroup>
                                 </SelectContent>
                             </Select>
                         </div>

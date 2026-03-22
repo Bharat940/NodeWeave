@@ -134,7 +134,7 @@ export const OpenAiDialog = ({
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
-                        OpenAI Configuratiob
+                        OpenAI Configuration
                     </DialogTitle>
                     <DialogDescription>
                         Configure the AI model and prompts for this node.
@@ -170,7 +170,7 @@ export const OpenAiDialog = ({
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Model</FormLabel>
-                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value}>
                                         <FormControl>
                                             <SelectTrigger className="w-full">
                                                 <SelectValue placeholder="Select a model" />
@@ -201,7 +201,7 @@ export const OpenAiDialog = ({
                                     </FormLabel>
                                     <Select
                                         onValueChange={field.onChange}
-                                        defaultValue={field.value}
+                                        value={field.value}
                                         disabled={isLoadingCredentials || !credentials?.length}
                                     >
                                         <FormControl>

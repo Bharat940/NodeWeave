@@ -147,7 +147,7 @@ export const GitHubDialog = ({
                                     </FormLabel>
                                     <Select
                                         onValueChange={field.onChange}
-                                        defaultValue={field.value}
+                                        value={field.value}
                                         disabled={isLoadingCredentials || !credentials?.length}
                                     >
                                         <FormControl>

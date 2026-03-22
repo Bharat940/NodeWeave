@@ -34,8 +34,18 @@ export function TemplateDialog({ open, onOpenChange }: TemplateDialogProps) {
 
     const createMutation = useMutation(
         trpc.workflows.create.mutationOptions({
-            onSuccess: (data: any) => {
-                toast.success("Workflow created successfully.");
+            onSuccess: (data: any, variables: any) => {
+                const isTemplate = !!variables?.templateId;
+                toast.success(isTemplate ? "Workflow created from template!" : "Workflow created!");
+                
+                if (isTemplate) {
+                    setTimeout(() => {
+                        toast.info("Please configure your own credentials and check API settings before trying to execute.", {
+                            duration: 6000,
+                        });
+                    }, 1000);
+                }
+                
                 queryClient.invalidateQueries(trpc.workflows.getMany.queryFilter());
                 startTransition(() => {
                     router.push(`/workflows/${data.id}`);

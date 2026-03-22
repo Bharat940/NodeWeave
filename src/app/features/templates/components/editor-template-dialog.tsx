@@ -53,6 +53,11 @@ export function EditorTemplateDialog({ open, onOpenChange }: EditorTemplateDialo
                         editor.addEdges(data.edges);
                     }
                     toast.success("Template inserted into canvas!");
+                    setTimeout(() => {
+                        toast.info("Check and update credentials for the newly added nodes.", {
+                            duration: 5000,
+                        });
+                    }, 1000);
                     onOpenChange(false);
                 }
             },
