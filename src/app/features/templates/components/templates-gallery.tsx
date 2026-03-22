@@ -86,7 +86,7 @@ const TemplateListContent = () => {
                                     <div className="flex-1 flex items-center justify-center h-9 text-xs text-muted-foreground font-semibold bg-muted px-4 rounded-lg whitespace-nowrap shadow-xs">
                                         {template.useCount.toLocaleString()} {template.useCount === 1 ? 'use' : 'uses'}
                                     </div>
-                                    <Button asChild size="sm" variant="outline" className="flex-1 h-9 px-4 font-semibold group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 pointer-events-auto">
+                                    <Button asChild size="sm" variant="outline" className="flex-1 h-9 px-4 font-semibold hover:bg-emerald-600 hover:text-white dark:hover:bg-primary dark:hover:text-primary-foreground border-border/50 group-hover:border-primary/50 transition-all duration-300 pointer-events-auto shadow-xs">
                                         <Link href={`/templates/${template.id}`}>
                                             Preview <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                                         </Link>

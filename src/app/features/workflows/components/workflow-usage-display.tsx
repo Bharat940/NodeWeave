@@ -66,11 +66,16 @@ const WorkflowUsageContent = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Workflows Usage */}
                 <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs">
+                    <div className="flex flex-row flex-wrap items-center justify-between text-xs gap-2">
                         <span className="text-muted-foreground font-medium">Workflows</span>
-                        <span className="text-foreground">
-                            {workflowCount} / {maxWorkflows} <span className="text-muted-foreground ml-1">({activeWorkflowsCount} Active)</span>
-                        </span>
+                        <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                            <span className="text-foreground font-semibold">
+                                {workflowCount} / {maxWorkflows}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full border border-border/50">
+                                {activeWorkflowsCount} Active
+                            </span>
+                        </div>
                     </div>
                     <div className="relative">
                         <Progress value={workflowUsagePercentage} className="h-1.5" />
@@ -83,9 +88,9 @@ const WorkflowUsageContent = () => {
 
                 {/* Executions Usage */}
                 <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs">
+                    <div className="flex flex-row flex-wrap items-center justify-between text-xs gap-2">
                         <span className="text-muted-foreground font-medium">Monthly Executions</span>
-                        <span className="text-foreground">
+                        <span className="text-foreground font-semibold">
                             {executionsCount} / {maxExecutions}
                         </span>
                     </div>

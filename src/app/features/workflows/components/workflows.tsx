@@ -180,11 +180,10 @@ export const WorkFlowItem = ({ data }: { data: Workflow }) => {
             href={`/workflows/${data.id}`}
             title={data.name}
             subtitle={
-                <>
-                    Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })}{" "}
-                    &bull; Created{" "}
-                    {formatDistanceToNow(data.createdAt, { addSuffix: true })}
-                </>
+                <span className="flex items-center gap-1.5 truncate">
+                    <span>Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })}</span>
+                    <span className="hidden sm:inline">&bull; Created {formatDistanceToNow(data.createdAt, { addSuffix: true })}</span>
+                </span>
             }
             image={
                 <div className="size-8 flex items-center justify-center">
@@ -194,20 +193,20 @@ export const WorkFlowItem = ({ data }: { data: Workflow }) => {
             actions={
                 <div
                     onClick={(e) => e.preventDefault()}
-                    className="flex items-center gap-2 mr-2"
+                    className="flex items-center gap-1.5 sm:gap-2 mr-1 sm:mr-2"
                 >
                     <span className={cn(
-                        "text-xs text-muted-foreground font-medium hidden sm:flex items-center gap-1.5 transition-opacity",
+                        "text-[10px] sm:text-xs text-muted-foreground font-medium hidden sm:flex items-center gap-1 transition-opacity",
                         updateStatus.isPending && "opacity-70"
                     )}>
-                        {updateStatus.isPending && <Loader2 className="size-3 animate-spin text-blue-500" />}
+                        {updateStatus.isPending && <Loader2 className="size-2.5 animate-spin text-blue-500" />}
                         {data.isActive ? "Active" : "Draft"}
                     </span>
                     <Switch
                         checked={data.isActive}
                         onCheckedChange={(checked) => updateStatus.mutate({ id: data.id, isActive: checked })}
                         disabled={removeWorkflow.isPending}
-                        className={cn(updateStatus.isPending && "opacity-50 transition-opacity")}
+                        className={cn("scale-85 sm:scale-100", updateStatus.isPending && "opacity-50 transition-opacity")}
                     />
                 </div>
             }

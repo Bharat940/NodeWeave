@@ -115,11 +115,11 @@ export const ExecutionItem = ({
         ) : null;
 
     const subtitle = (
-        <>
-            {data.workflow.name} &bull; Started{" "}
-            {formatDistanceToNow(data.startedAt, { addSuffix: true })}
-            {duration !== null && <> &bull; Took {duration}s </>}
-        </>
+        <span className="flex items-center gap-1.5 truncate">
+            <span className="hidden sm:inline">{data.workflow.name} &bull; </span>
+            <span>Started {formatDistanceToNow(data.startedAt, { addSuffix: true })}</span>
+            {duration !== null && <span className="hidden sm:inline"> &bull; Took {duration}s </span>}
+        </span>
     )
 
     return (

@@ -97,7 +97,7 @@ export const ExecutionView = ({
                         </div>
                         {/* Live badge: shown when Inngest Realtime connection is active */}
                         {isLive && (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-full px-2.5 py-0.5 animate-pulse">
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 bg-blue-500/10 border border-blue-500/20 rounded-full px-2.5 py-0.5 animate-pulse">
                                 <WifiIcon className="size-3" />
                                 Live
                             </span>
@@ -123,7 +123,7 @@ export const ExecutionView = ({
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <p className="text-sm font-medium text-muted-foreground">
                             Workflow
@@ -174,12 +174,12 @@ export const ExecutionView = ({
                 </div>
 
                 {execution.error && (
-                    <div className="mt-6 p-4 bg-red-50 rounded-md space-y-3">
+                    <div className="mt-6 p-4 bg-red-500/10 border border-red-500/20 rounded-md space-y-3">
                         <div>
-                            <p className="text-sm font-medium text-red-900 mb-2">
+                            <p className="text-sm font-medium text-destructive mb-2">
                                 Error
                             </p>
-                            <p className="text-sm text-red-800 font-mono">
+                            <p className="text-sm text-destructive font-mono">
                                 {execution.error}
                             </p>
                         </div>
@@ -202,7 +202,7 @@ export const ExecutionView = ({
                                     </Button>
                                 </CollapsibleTrigger>
                                 <CollapsibleContent>
-                                    <pre className="text-xs font-mono text-red-800 whitespace-pre-wrap break-all mt-2 p-2 bg-red-100">
+                                    <pre className="text-xs font-mono text-destructive whitespace-pre-wrap break-all mt-2 p-2 bg-red-500/5 rounded-sm border border-red-500/10">
                                         {execution.errorStack}
                                     </pre>
                                 </CollapsibleContent>

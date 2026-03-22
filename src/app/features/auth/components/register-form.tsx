@@ -53,10 +53,8 @@ export function RegisterForm() {
   const signInGithub = async () => {
     await authClient.signIn.social({
       provider: "github",
+      callbackURL: "/",
     }, {
-      onSuccess: () => {
-        router.push("/");
-      },
       onError: () => {
         toast.error("Something went wrong");
       }
@@ -66,10 +64,8 @@ export function RegisterForm() {
   const signInGoogle = async () => {
     await authClient.signIn.social({
       provider: "google",
+      callbackURL: "/",
     }, {
-      onSuccess: () => {
-        router.push("/");
-      },
       onError: () => {
         toast.error("Something went wrong");
       }
@@ -100,7 +96,7 @@ export function RegisterForm() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Card>
+      <Card className="shadow-2xl border-border/50 dark:shadow-primary/5">
         <CardHeader className="text-center">
           <CardTitle>Get Started</CardTitle>
           <CardDescription>Create your account to get started</CardDescription>

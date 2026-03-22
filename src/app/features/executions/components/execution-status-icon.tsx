@@ -18,20 +18,20 @@ export const ExecutionStatusIcon = ({
     switch (status) {
         case ExecutionStatus.SUCCESS:
             Icon = CheckCircle2Icon;
-            colorClass = "text-green-600";
+            colorClass = "text-emerald-500";
             break;
         case ExecutionStatus.FAILED:
             Icon = XCircleIcon;
-            colorClass = "text-red-600";
+            colorClass = "text-destructive";
             break;
         case ExecutionStatus.RUNNING:
             Icon = LoaderCircle;
-            colorClass = "text-blue-600";
+            colorClass = "text-blue-500";
             animClass = "animate-spin";
             break;
         case ExecutionStatus.QUEUED:
             Icon = ClockIcon;
-            colorClass = "text-muted-foreground";
+            colorClass = "text-amber-500";
             animClass = "animate-pulse";
             break;
     }

@@ -128,11 +128,10 @@ export const CredentialItem = ({ data }: { data: Credential }) => {
             href={`/credentials/${data.id}`}
             title={data.name}
             subtitle={
-                <>
-                    Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })}{" "}
-                    &bull; Created{" "}
-                    {formatDistanceToNow(data.createdAt, { addSuffix: true })}
-                </>
+                <span className="flex items-center gap-1.5 truncate">
+                    <span>Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })}</span>
+                    <span className="hidden sm:inline">&bull; Created {formatDistanceToNow(data.createdAt, { addSuffix: true })}</span>
+                </span>
             }
             image={
                 <div className="size-8 flex items-center justify-center">

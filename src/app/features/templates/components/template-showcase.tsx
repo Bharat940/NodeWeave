@@ -5,10 +5,11 @@ import { useTRPC } from "@/trpc/client";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ReactFlow, Background, Controls, type Node, type Edge } from "@xyflow/react";
+import { ReactFlow, Background, Controls, type Node, type Edge, BackgroundVariant } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { nodeComponents } from "@/config/node-components";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "next-themes";
 import { ArrowLeft, Loader2, PlayCircle, Star, BarChart3, User, Calendar } from "lucide-react";
 import Link from "next/link";
 import { formatDate } from "date-fns";
@@ -121,6 +122,7 @@ export const TemplateShowcase = ({ templateId }: { templateId: string }) => {
     if (isLoading) return <LoadingView message="Loading template details..." />;
     if (isError || !template) return <ErrorView message="Failed to find template" />;
 
+    const { theme, resolvedTheme } = useTheme();
 
     return (
         <div className="w-full flex justify-center h-full">
@@ -247,7 +249,7 @@ export const TemplateShowcase = ({ templateId }: { templateId: string }) => {
                 </AlertDialog>
 
                 {/* Right Side: Flow Visualization (Dead Editor) - Sticky on Desktop */}
-                <div className="w-full lg:w-2/3 h-[500px] lg:h-[calc(100vh-8rem)] lg:sticky lg:top-8 bg-muted/20 border-2 border-dashed rounded-3xl overflow-hidden relative group shrink-0">
+                <div className="w-full lg:w-2/3 h-[400px] sm:h-[500px] lg:h-[calc(100vh-8rem)] lg:sticky lg:top-8 bg-muted/20 border-2 border-dashed rounded-3xl overflow-hidden relative group shrink-0">
                     <div className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-background/80 backdrop-blur-md px-4 py-2 rounded-full border shadow-sm">
                         <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                         <span className="text-xs font-semibold text-muted-foreground tracking-wide uppercase">Interactive Preview</span>
@@ -269,8 +271,9 @@ export const TemplateShowcase = ({ templateId }: { templateId: string }) => {
                         minZoom={0.5}
                         maxZoom={2}
                         className="bg-transparent"
+                        colorMode={resolvedTheme as "light" | "dark"}
                     >
-                        <Background gap={20} size={1} color="#cbd5e1" className="opacity-50" />
+                        <Background variant={BackgroundVariant.Dots} gap={20} />
                         <Controls className="fill-foreground bg-background border shadow-md" showInteractive={false} />
                     </ReactFlow>
 

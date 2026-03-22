@@ -49,7 +49,7 @@ export const EntityHeader = ({
     hiddenNewButton
 }: EntityHeaderProps) => {
     return (
-        <div className="flex flex-row items-center justify-between gap-x-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex flex-col">
                 <h1 className="text-lg md:text-xl font-semibold">{title}</h1>
                 {description && (
@@ -94,8 +94,8 @@ export const EntityContainer = ({
     search
 }: EntityContainerProps) => {
     return (
-        <div className="p-4 md:px-10 md:py-6 h-full">
-            <div className="mx-auto max-w-7xl w-full flex flex-col gap-y-8 h-full">
+        <div className="p-3 sm:p-6 md:p-8 lg:p-10 h-full">
+            <div className="mx-auto max-w-7xl w-full flex flex-col gap-y-6 md:gap-y-8 h-full">
                 {header}
                 <div className="flex flex-col gap-y-4 h-full">
                     {search}
@@ -115,9 +115,9 @@ interface EntitySearchProps {
 
 export const EntitySearch = ({ value, onChange, placeholder = "Search" }: EntitySearchProps) => {
     return (
-        <div className="relative ml-auto">
+        <div className="relative w-full sm:max-w-[200px] sm:ml-auto">
             <SearchIcon className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input className="max-w-[200px] bg-background shadow-none border-border pl-8" placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} />
+            <Input className="w-full bg-background shadow-none border-border pl-8 h-9 text-sm" placeholder={placeholder} value={value} onChange={(e) => onChange(e.target.value)} />
         </div>
     )
 }
@@ -136,11 +136,11 @@ export const EntityPagination = ({
     disabled
 }: EntityPaginationProps) => {
     return (
-        <div className="flex items-center justify-between gap-x-2 w-full">
-            <div className="flex-1 text-sm text-muted-foreground">
-                Page {page} of {totalPages || 1}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full border-t border-border/40 pt-4">
+            <div className="text-sm text-muted-foreground order-2 sm:order-1">
+                Page <span className="text-foreground font-medium">{page}</span> of <span className="text-foreground font-medium">{totalPages || 1}</span>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
+            <div className="flex items-center justify-end space-x-2 order-1 sm:order-2">
                 <Button disabled={page === 1 || disabled} variant="outline" size="sm" onClick={() => onPageChange(Math.max(1, page - 1))}>
                     Previous
                 </Button>
@@ -190,7 +190,7 @@ interface EmptyViewProps extends StateViewProps {
 
 export const EmptyView = ({ message, onNew }: EmptyViewProps) => {
     return (
-        <Empty className="border border-border bg-white">
+        <Empty className="border border-border bg-card/50 backdrop-blur-sm shadow-sm">
             <EmptyHeader>
                 <EmptyMedia variant="icon">
                     <PackageOpenIcon />
@@ -288,26 +288,26 @@ export const EntityItem = ({
     return (
         <Link href={href} prefetch>
             <Card className={cn(
-                "p-4 shadow-none hover:shadow cursor-pointer",
+                "p-4 shadow-none hover:shadow-md hover:bg-accent/50 transition-all cursor-pointer border-border/50 overflow-hidden",
                 isRemoving && "opacity-50 cursor-not-allowed",
                 className,
             )}>
-                <CardContent className="flex flex-row items-center justify-between p-0">
-                    <div className="flex items-center gap-3">
-                        {image}
-                        <div>
-                            <CardTitle className="text-base font-medium">
+                <CardContent className="flex flex-row items-center justify-between p-0 gap-4 min-w-0">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="shrink-0">{image}</div>
+                        <div className="min-w-0 flex-1">
+                            <CardTitle className="text-base font-medium truncate">
                                 {title}
                             </CardTitle>
                             {!!subtitle && (
-                                <CardDescription className="text-xs">
+                                <CardDescription className="text-xs truncate">
                                     {subtitle}
                                 </CardDescription>
                             )}
                         </div>
                     </div>
                     {(actions || onRemove) && (
-                        <div className="flex gap-x-4 items-center">
+                        <div className="flex gap-x-3 items-center shrink-0 ml-auto">
                             {actions}
                             {onRemove && (
                                 <DropdownMenu>

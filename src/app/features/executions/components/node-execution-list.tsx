@@ -35,13 +35,13 @@ interface NodeExecution {
 const getStatusColor = (status: ExecutionStatus) => {
     switch (status) {
         case ExecutionStatus.SUCCESS:
-            return "border-green-200 bg-green-50";
+            return "border-emerald-500/30 bg-emerald-500/10";
         case ExecutionStatus.FAILED:
-            return "border-red-200 bg-red-50";
+            return "border-destructive/30 bg-destructive/10";
         case ExecutionStatus.RUNNING:
-            return "border-blue-200 bg-blue-50";
+            return "border-blue-500 bg-blue-500/20 animate-pulse";
         default:
-            return "border-gray-200 bg-gray-50";
+            return "border-amber-500/30 bg-amber-500/10";
     }
 }
 
@@ -58,11 +58,11 @@ const CopyButton = ({ text }: { text: string }) => {
     return (
         <button
             onClick={copy}
-            className="ml-auto p-1 rounded-sm hover:bg-black/10 transition-colors text-muted-foreground hover:text-foreground"
+            className="ml-auto p-1 rounded-sm hover:bg-black/10 transition-colors text-muted-foreground hover:text-foreground dark:hover:bg-white/10"
             title="Copy to clipboard"
         >
             {copied
-                ? <ClipboardCheckIcon className="size-3.5 text-green-600" />
+                ? <ClipboardCheckIcon className="size-3.5 text-primary" />
                 : <ClipboardIcon className="size-3.5" />
             }
         </button>
@@ -77,14 +77,14 @@ const JsonViewer = ({ data, label, isError = false }: { data: any, label: string
     return (
         <div className="flex-1 min-w-0">
             <div className="flex items-center mb-1.5">
-                <p className={cn("text-xs font-medium", isError ? "text-red-700" : "text-muted-foreground")}>
+                <p className={cn("text-xs font-medium", isError ? "text-destructive" : "text-muted-foreground")}>
                     {label}
                 </p>
                 <CopyButton text={text} />
             </div>
             <div className={cn(
                 "rounded-md border p-3 text-xs font-mono overflow-auto max-h-[300px]",
-                isError ? "bg-red-50 border-red-200 text-red-900" : "bg-muted/50 text-foreground"
+                isError ? "bg-destructive/10 border-destructive/20 text-destructive" : "bg-muted/30 border-border/50 text-foreground"
             )}>
                 <pre className="whitespace-pre-wrap break-all">{text}</pre>
             </div>
@@ -109,7 +109,7 @@ const NodeExecutionItem = ({ execution }: { execution: NodeExecution }) => {
                 getStatusColor(execution.status)
             )}>
                 <CollapsibleTrigger asChild>
-                    <button className="p-1 hover:bg-black/5 rounded-sm transition-colors">
+                    <button className="p-1 hover:bg-accent/40 rounded-sm transition-colors">
                         {isOpen ? (
                             <ChevronDownIcon className="size-4 text-muted-foreground" />
                         ) : (
@@ -122,22 +122,21 @@ const NodeExecutionItem = ({ execution }: { execution: NodeExecution }) => {
                     <ExecutionStatusIcon status={execution.status} />
                 </div>
 
-                <div className="flex-1 min-w-0 flex items-center justify-between gap-4">
-                    <div className="flex flex-col">
+                <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
+                    <div className="flex flex-col min-w-0">
                         <span className="text-sm font-medium truncate">
                             {execution.name}
                         </span>
-                        <div className="flex items-center text-xs text-muted-foreground gap-2">
-                            <span>{execution.type}</span>
+                        <div className="flex items-center text-[10px] sm:text-xs text-muted-foreground gap-1.5 sm:gap-2">
+                            <span className="truncate">{execution.type}</span>
                             <span>•</span>
-                            {/* Relative time; hover shows the absolute timestamp for precision */}
-                            <span title={absoluteTime}>
+                            <span title={absoluteTime} className="truncate">
                                 {formatDistanceToNow(new Date(execution.startedAt), { addSuffix: true })}
                             </span>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground whitespace-nowrap">
+                    <div className="flex items-center gap-2 sm:gap-3 text-[10px] sm:text-xs text-muted-foreground">
                         {duration && (
                             <div className="flex items-center gap-1 bg-background/50 px-2 py-1 rounded-md border">
                                 <ClockIcon className="size-3" />
@@ -145,9 +144,9 @@ const NodeExecutionItem = ({ execution }: { execution: NodeExecution }) => {
                             </div>
                         )}
                         <Badge variant="outline" className={cn(
-                            "capitalize shadow-none",
-                            execution.status === ExecutionStatus.SUCCESS && "border-green-200 text-green-700 bg-green-100/50",
-                            execution.status === ExecutionStatus.FAILED && "border-red-200 text-red-700 bg-red-100/50",
+                            "capitalize shadow-none border-border/50 bg-background/50",
+                            execution.status === ExecutionStatus.SUCCESS && "border-emerald-500/40 text-emerald-600 bg-emerald-500/10",
+                            execution.status === ExecutionStatus.FAILED && "border-destructive/40 text-destructive bg-destructive/10",
                         )}>
                             {execution.status.toLowerCase()}
                         </Badge>
@@ -156,7 +155,7 @@ const NodeExecutionItem = ({ execution }: { execution: NodeExecution }) => {
             </div>
 
             <CollapsibleContent>
-                <div className="pl-12 pr-1 py-3 animate-in slide-in-from-top-2 fade-in duration-200">
+                <div className="pl-8 sm:pl-12 pr-1 py-3 animate-in slide-in-from-top-2 fade-in duration-200">
                     <div className="space-y-4">
                         {execution.error && (
                             <JsonViewer data={execution.error} label="Error Details" isError />
@@ -188,7 +187,7 @@ export const NodeExecutionList = ({ executions }: { executions: NodeExecution[] 
                 </Badge>
             </div>
 
-            <div className="space-y-3 relative before:absolute before:inset-0 before:ml-[23px] before:w-px before:bg-border/50 before:-z-10">
+            <div className="space-y-3 relative before:absolute before:inset-0 before:ml-[19px] sm:before:ml-[23px] before:w-px before:bg-border/50 before:-z-10">
                 {executions.map((execution) => (
                     <NodeExecutionItem key={execution.id} execution={execution} />
                 ))}

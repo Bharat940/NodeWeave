@@ -1,420 +1,181 @@
-# NodeWeave
+<div align="center">
+  <img src="./public/logos/logo.svg" alt="NodeWeave Logo" width="120" height="120" />
+  <h1>NodeWeave</h1>
+  <p><strong>A high-fidelity, node-based workflow automation platform.</strong></p>
 
-A powerful workflow automation platform built with Next.js that enables users to create, manage, and execute complex automation workflows through an intuitive visual interface.
+  <p>
+    <img src="https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=next.js" alt="Next.js" />
+    <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react" alt="React" />
+    <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS" />
+    <img src="https://img.shields.io/badge/tRPC-2596be?style=for-the-badge&logo=trpc" alt="tRPC" />
+    <img src="https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma" alt="Prisma" />
+    <img src="https://img.shields.io/badge/Inngest-FF5733?style=for-the-badge&logo=inngest" alt="Inngest" />
+  </p>
 
-## Overview
+  <p>
+    <a href="#getting-started">Getting Started</a> •
+    <a href="#core-features">Features</a> •
+    <a href="#supported-integrations">Integrations</a> •
+    <a href="#technology-stack">Tech Stack</a> •
+    <a href="#api-routes">API</a> •
+    <a href="#contributing">Contributing</a>
+  </p>
+</div>
 
-NodeWeave is a modern SaaS automation platform that allows users to build sophisticated workflows by connecting various triggers and actions through a visual node-based editor. The platform supports multiple integrations including AI models, messaging platforms, and developer tools.
+<br />
 
-## Core Features
+---
 
-### Visual Workflow Editor
-- Drag-and-drop node-based interface powered by XYFlow
-- Real-time workflow visualization
-- Connection validation and error handling
-- Auto-save functionality
-- **Execution History Replay**: Re-run failed webhooks or manual triggers with original payloads
+## 🌟 Overview
+
+**NodeWeave** is a modern SaaS automation platform that follows a premium **"Muted Sage & Obsidian"** aesthetic. It allows users to build sophisticated workflows by connecting various triggers and actions through a high-fidelity visual node-based editor powered by **XYFlow v12**. 
+
+The platform emphasizes professional dark mode consistency, glassmorphism, and pixel-perfect status tracking, backed by the reliability of **Inngest** for background job processing.
+
+---
+
+## 🚀 Core Features
+
+### 🎨 Visual Workflow Editor
+- **Drag-and-Drop Interface**: Built on **XYFlow v12** for smooth, real-time workflow visualization.
+- **Muted Sage & Obsidian Theme**: Professional dark mode with glassmorphic toolbars and high-contrast status colors (Emerald, Blue, Amber, Red).
 - **One-Click Template Publishing (Admin)**: Instantly turn any live workflow into a reusable community template with automatic credential stripping for maximum security.
-- **Trigger Payload Visibility**: Inspect raw inbound webhook and trigger data directly in the dashboard for easy debugging.
-- **Dynamic Template Gallery**: Browse 15+ pre-built automation scenarios with rich metadata and usage tracking.
-- **Interactive Template Showcase**: Preview full workflow logic and branching handles in a live React Flow viewer before cloning.
+- **Interactive Template Showcase**: Preview full workflow logic and branching handles in a live viewer before applying to your canvas.
+- **Context-Rich Editor Templates**: A fully integrated template gallery inside the editor with names, descriptions, and usage tracking.
 
-### Authentication & User Management
-- Secure authentication using Better Auth
-- Email/password authentication
-- Session management with automatic expiration
-- User account management
-- Protected routes and API endpoints
+### ⚡ Workflow Execution Engine
+- **Reliable background job processing**: Powered by **Inngest** with event-driven architecture.
+- **Real-Time Updates**: Live execution status tracking with adaptive polling for optimal performance.
+- **Execution History Replay**: Re-run failed webhooks or manual triggers with original payloads for instant recovery.
+- **Conditional Branching**: Visual branching logic with dedicated true/false paths for complex scenarios.
+- **Scheduled Execution**: Native support for cron-based workflow scheduling.
+- **Usage Metering & Quotas**: Built-in monthly execution tracking and active-workflow capping for SaaS tiers.
 
-### Workflow Execution Engine
-- Powered by Inngest for reliable background job processing
-- Real-time execution status updates
-- Error handling and retry mechanisms
-- Execution history and logging
-- **Real-Time Updates**: Live execution status tracking with adaptive polling for optimal performance
-- Event-driven architecture
-- **Workflow State Management**: Safely pause and resume workflows with Active/Inactive toggles
-- **Execution Replay**: Re-run failed webhooks or manual triggers
-- **Conditional Branching**: Support for If/Else logic and dynamic execution paths
-- **Scheduled Execution**: Native support for cron-based workflow scheduling
-- **Usage Metering & Quotas**: Built-in monthly execution tracking and active-workflow capping for SaaS tiers
+### 🔐 Authentication & User Management
+- **Better Auth v1.4+**: Secure authentication with specialized **Polar** integration for subscriptions.
+- **Stable Social Sign-in**: Optimized Google/GitHub flows with robust redirection (vetted for Zen/Firefox).
+- **Credential Encryption**: Secure storage for OpenAI, Anthropic, Gemini, and GitHub tokens using **Cryptr**.
 
+---
 
-### Credential Management
-- Secure credential storage with encryption using Cryptr
-- Support for multiple credential types:
-  - OpenAI API keys
-  - Anthropic API keys
-  - Google Gemini API keys
-  - GitHub tokens
-- Credential reuse across workflows
-- Encrypted storage in PostgreSQL database
+## 🔗 Supported Integrations
 
-## Supported Integrations
+### 🚦 Triggers
+- **Manual Trigger**: Start workflows manually from the dashboard.
+- **Email Trigger**: Process incoming emails via Resend, SendGrid, Mailgun, or Postmark.
+- **GitHub Trigger**: Respond to repo events (issues, PRs, comments).
+- **Telegram & WhatsApp**: Trigger workflows from incoming chat messages.
+- **Google Form**: Automatic processing of form submissions.
+- **Stripe**: Handle payment events and subscription lifecycle.
+- **Webhook**: Generic HTTP POST receiver for external third-party data.
+- **Cron**: Time-based triggers (Every minute, Hourly, Daily, etc.).
 
-### Triggers
-Workflow triggers that initiate automation flows:
+### ⚙️ Action Nodes
+- **AI Models**: Full support for OpenAI, Anthropic Claude, and Google Gemini.
+- **Messaging**: Discord, Slack, Telegram, WhatsApp (Twilio), and Email (SMTP/Resend).
+- **Developer Tools**: GitHub issue management and repo coordination.
+- **HTTP Request**: Custom REST API calls with support for all methods and headers.
 
-- **Manual Trigger**: Start workflows manually from the dashboard
-- **Email Trigger**: Trigger workflows from incoming emails (supports Resend, SendGrid, Mailgun, Postmark)
-- **GitHub Trigger**: Respond to GitHub webhook events (issues, pull requests, comments)
-- **Telegram Trigger**: Trigger workflows from Telegram messages
-- **WhatsApp Trigger**: Trigger workflows from WhatsApp messages via Twilio
-- **Google Form Trigger**: Process Google Form submissions
-- **Stripe Trigger**: Handle Stripe payment events
-- **Webhook Trigger**: Trigger workflows via standard HTTP POST requests with JSON payloads
-- **Cron Trigger**: Schedule workflows to run at specific intervals using cron expressions (e.g., Every minute, Hourly, Daily)
+### 🧠 Logic Nodes
+- **If/Else Condition**: High-fidelity visual branching for conditional paths.
+- **Data Transformer**: Reshape nested data structures using Handlebars templates.
+- **Custom Code (JS)**: Sandboxed JavaScript (QuickJS) with **Variable Name Isolation**.
+- **Delay / Wait**: Pause execution for granular durations (seconds to days).
 
-**Note**: More trigger nodes are planned for future releases.
+---
 
-### Actions
-Execution nodes that perform specific tasks:
+## 🛠️ Technology Stack
 
-- **AI Models**:
-  - OpenAI
-  - Anthropic Claude
-  - Google Gemini
-  
-- **Messaging Platforms**:
-  - Discord: Send messages to Discord channels
-  - Slack: Post messages to Slack channels
-  - Telegram: Send Telegram messages
-  - WhatsApp: Send WhatsApp messages via Twilio
-  - Email: Send emails via Resend or SMTP
-  
-- **Developer Tools**:
-  - GitHub: Create issues, post comments, manage repositories
-  - HTTP Request: Make custom API calls
-
-### Logic Nodes
-Control flow nodes that manage execution paths:
-
-- **If/Else Condition**: Visual branching logic with dedicated `source-true` and `source-false` handles for complex workflow paths.
-- **Data Transformer**: Map and reshape nested data structures between workflow steps using Handlebars templates.
-- **Custom Code (JS)**: Execute sandboxed JavaScript (QuickJS) with full **Variable Name Isolation** to safely reference logic results in downstream nodes.
-- **Delay / Wait**: Pause workflow execution for a configured duration (seconds, minutes, hours, days) before continuing to the next step
-
-**Note**: Additional execution nodes and integrations are planned for future releases.
-
-## Technology Stack
-
-### Frontend
-- **Next.js 16**: React framework with App Router and Turbopack
-- **React 19**: Latest React features
-- **TypeScript**: Type-safe development
-- **Tailwind CSS v4**: Utility-first styling with CSS-first configuration
-- **Radix UI**: Accessible component primitives
-- **XYFlow**: Visual workflow editor
-- **Lucide React**: Icon library
-- **React Hook Form**: Form management with Zod validation
-- **TanStack Query**: Data fetching and caching
-- **Jotai**: State management
-- **Sonner**: Toast notifications
-
-### Backend
-- **tRPC**: End-to-end typesafe APIs
-- **Prisma v7**: Database ORM with enhanced type safety
-- **PostgreSQL**: Primary database
-- **Better Auth**: Authentication solution
-- **Inngest**: Background job processing and workflow orchestration
-- **Cryptr**: Encryption for sensitive credentials
-- **Handlebars**: Template engine for dynamic data processing
-
-### AI & APIs
-- **Vercel AI SDK**: Unified AI model interface
-
-### Development Tools
-- **mprocs**: Multi-process runner for development
-- **ngrok**: Local development tunneling for webhooks
-- **inngest-cli**: Inngest development server
-
-## Database Schema
-
-### User Management
-- **User**: User accounts with email verification
-- **Session**: Active user sessions with expiration
-- **Account**: OAuth and credential provider accounts
-- **Verification**: Email verification tokens
-
-### Workflow System
-- **Workflow**: Container for automation workflows
-- **Node**: Individual workflow nodes (triggers, actions, and logic)
-- **Connection**: Links between nodes defining execution flow with specific handle remapping
-- **WorkflowTemplate**: Master blueprints for community sharing with sanitized logic and metadata
-- **Execution**: Workflow execution records with status tracking and real-time state broadcasts
-
-### Credentials
-- **Credential**: Encrypted API keys and authentication tokens
-
-## Project Structure
-
+```mermaid
+graph TD
+    A[Frontend: Next.js 16 + React 19] --> B[API: tRPC + Zod]
+    B --> C[Backend: Node.js + Prisma v7]
+    C --> D[Database: PostgreSQL]
+    A --> E[Visuals: XYFlow v12]
+    A --> F[Styling: Tailwind CSS v4 + OKLCH]
+    C --> G[Orchestration: Inngest]
+    G --> H[Jobs: Webhooks + Cron]
+    C --> I[Auth: Better Auth v1.4 + Polar]
 ```
+
+---
+
+## 🏗️ Project Structure
+
+```text
 nodeweave/
-├── prisma/
-│   └── schema.prisma          # Database schema definition
-├── public/
-│   └── logos/                 # Application logos and assets
+├── prisma/                    # Database schema & migrations
+├── public/                    # Logos and static assets
 ├── src/
-│   ├── app/                   # Next.js App Router pages
-│   │   ├── features/
-│   │   │   ├── auth/          # Authentication components
-│   │   │   ├── credentials/   # Credential management
-│   │   │   ├── editor/        # Workflow editor
-│   │   │   ├── executions/    # Execution nodes and components
-│   │   │   ├── triggers/      # Trigger nodes and components
-│   │   │   ├── workflows/     # Workflow management
-│   │   │   └── subscriptions/ # Subscription management
-│   │   ├── api/               # API routes
-│   │   └── (auth)/            # Auth route group
-│   ├── components/            # Shared React components
-│   │   ├── ui/                # UI component library
-│   │   └── app-sidebar.tsx    # Main navigation sidebar
-│   ├── config/                # Configuration files
-│   ├── generated/             # Generated Prisma client
-│   ├── hooks/                 # Custom React hooks
-│   ├── inngest/               # Inngest functions and workflows
-│   │   ├── channels/          # Channel-specific execution logic
-│   │   ├── client.ts          # Inngest client configuration
-│   │   └── functions.ts       # Workflow execution functions
-│   ├── lib/                   # Utility libraries
-│   │   ├── auth.ts            # Better Auth configuration
-│   │   ├── db.ts              # Prisma client instance
-│   │   ├── encryption.ts      # Credential encryption utilities
-│   │   └── utils.ts           # General utilities
-│   └── trpc/                  # tRPC setup
-│       ├── routers/           # API route definitions
-│       └── server.ts          # tRPC server configuration
-├── .env                       # Environment variables
-├── package.json               # Dependencies and scripts
-├── tsconfig.json              # TypeScript configuration
-└── next.config.ts             # Next.js configuration
+│   ├── app/                   # Next.js App Router & Layouts
+│   │   ├── features/          # Feature-specific logic & UI
+│   │   │   ├── auth/          # Authentication & sessions
+│   │   │   ├── editor/        # XYFlow Canvas & Nodes
+│   │   │   ├── executions/    # Execution state & history
+│   │   │   ├── triggers/      # Webhook & Cron triggers
+│   │   │   └── templates/     # Gallery & metadata
+│   ├── components/            # Atomic UI components (Shadcn)
+│   ├── hooks/                 # Business logic hooks
+│   ├── inngest/               # Background task definitions
+│   ├── lib/                   # Auth, DB, and Encryption utilities
+│   └── trpc/                  # Type-safe API procedures
 ```
 
-## Getting Started
+---
+
+## 🚥 Getting Started
 
 ### Prerequisites
-- Node.js 18 or higher
-- PostgreSQL database
-- npm or yarn package manager
+- Node.js 18+
+- PostgreSQL Database
+- npm or pnpm
 
-### Installation
+### Quick Setup
 
-1. Clone the repository:
-```bash
-git clone https://github.com/Bharat940/nodeweave.git
-cd nodeweave
-```
+1. **Clone and Install**
+   ```bash
+   git clone https://github.com/Bharat940/nodeweave.git
+   cd nodeweave
+   npm install
+   ```
 
-2. Install dependencies:
-```bash
-npm install
-```
+2. **Database Migration**
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
 
-3. Set up environment variables:
-Create a `.env` file in the root directory with the following variables:
+3. **Multi-Service Development**
+   ```bash
+   npm run dev:all # Starts Next.js + Inngest + Tunneling
+   ```
 
-```env
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/nodeweave"
+The dashboard will be live at `http://localhost:3000`.
 
-# Better Auth
-BETTER_AUTH_SECRET="your-secret-key"
-BETTER_AUTH_URL="http://localhost:3000"
+---
 
-# Inngest
-INNGEST_EVENT_KEY="your-inngest-event-key"
-INNGEST_SIGNING_KEY="your-inngest-signing-key"
+## 🛡️ Security & API
 
-# Encryption
-ENCRYPTION_SECRET="your-encryption-secret"
+### Encryption
+All credentials (API Keys, OAuth Tokens) are encrypted at rest using **Cryptr**. NodeWeave never stores sensitive keys in plain text.
 
-# Optional: AI Provider API Keys
-OPENAI_API_KEY="your-openai-key"
-ANTHROPIC_API_KEY="your-anthropic-key"
-GOOGLE_API_KEY="your-google-key"
+### Verification
+Inbound webhooks are verified via signature checking, and the platform implements full **CSRF protection** and **Password Hashing** via Better Auth.
 
-# Optional: Messaging Platform Credentials
-DISCORD_BOT_TOKEN="your-discord-token"
-SLACK_BOT_TOKEN="your-slack-token"
-TELEGRAM_BOT_TOKEN="your-telegram-token"
-TWILIO_ACCOUNT_SID="your-twilio-sid"
-TWILIO_AUTH_TOKEN="your-twilio-token"
+---
 
-# Optional: GitHub Integration
-GITHUB_TOKEN="your-github-token"
-```
+## 📄 Scripts & Commands
 
-4. Set up the database:
-```bash
-npx prisma generate
-npx prisma db push
-```
+- `npm run dev`: Next.js development server.
+- `npm run inngest:dev`: Inngest orchestration server.
+- `npm run build`: Production bundle generation.
+- `npm run lint`: Code quality enforcement.
 
-5. Run the development server:
-```bash
-npm run dev
-```
+---
 
-The application will be available at `http://localhost:3000`.
-
-### Development Workflow
-
-For full development with all services running:
-
-```bash
-npm run dev:all
-```
-
-This uses `mprocs` to run:
-- Next.js development server
-- Inngest development server
-- ngrok tunnel (for webhook testing)
-
-Individual commands:
-```bash
-npm run dev          # Next.js dev server with Turbopack
-npm run inngest:dev  # Inngest dev server
-npm run ngrok:dev    # ngrok tunnel
-```
-
-## Building Workflows
-
-### Creating a Workflow
-
-1. Navigate to the Workflows page
-2. Click "Create Workflow"
-3. Add a trigger node (starting point)
-4. Add action nodes
-5. Connect nodes to define execution flow
-6. Configure each node with required credentials and parameters
-7. Save the workflow
-
-### Node Configuration
-
-Each node type requires specific configuration:
-
-- **Trigger Nodes**: Define when the workflow should start
-- **AI Nodes**: Require API credentials and prompt configuration
-- **Messaging Nodes**: Require channel/chat IDs and message content
-- **HTTP Request**: Requires URL, method, headers, and body
-
-### Execution Flow
-
-1. Trigger event occurs
-2. Inngest receives the event
-3. Workflow execution begins
-4. Nodes execute in topological order
-5. Results are passed between connected nodes
-6. Execution status is tracked in real-time
-7. Final results are stored in the database
-
-## API Routes
-
-### tRPC Endpoints
-
-All API endpoints are type-safe and accessible via tRPC:
-
-- `/api/trpc/workflows.*`: Workflow CRUD operations
-- `/api/trpc/credentials.*`: Credential management
-- `/api/trpc/executions.*`: Execution history and status
-- `/api/trpc/auth.*`: Authentication operations
-
-### Webhook Endpoints
-
-- `/api/webhooks/email`: Email webhook receiver (supports multiple providers)
-- `/api/webhooks/github`: GitHub webhook receiver
-- `/api/webhooks/telegram`: Telegram webhook receiver
-- `/api/webhooks/whatsapp`: WhatsApp webhook receiver
-- `/api/webhooks/stripe`: Stripe webhook receiver
-- `/api/webhooks/generic`: Generic webhook receiver for HTTP POST triggers
-
-### Inngest Endpoints
-
-- `/api/inngest`: Inngest event handler and function executor
-
-## Security
-
-### Credential Encryption
-All API keys and sensitive credentials are encrypted using Cryptr before storage in the database. Encryption keys are stored securely in environment variables.
-
-### Authentication
-- Session-based authentication with secure HTTP-only cookies
-- CSRF protection
-- Password hashing using Better Auth
-- Email verification for new accounts
-
-### API Security
-- tRPC procedures protected with authentication middleware
-- Input validation using Zod schemas
-- Rate limiting on sensitive endpoints
-- Webhook signature verification
-- **Execution Safety**: Webhooks and scheduled triggers ignore requests for inactive workflows
-
-## Deployment
-
-### Build for Production
-
-```bash
-npm run build
-```
-
-### Environment Variables
-
-Ensure all required environment variables are set in your production environment:
-- Database connection string
-- Authentication secrets
-- API keys for integrations
-- Webhook URLs
-
-### Database Migrations
-
-```bash
-npx prisma migrate deploy
-```
-
-### Recommended Platforms
-
-- **Vercel**: Optimized for Next.js deployment
-- **Railway**: PostgreSQL and application hosting
-- **Supabase**: PostgreSQL database hosting
-- **Neon**: Serverless PostgreSQL
-
-## Scripts
-
-- `npm run dev`: Start development server with Turbopack
-- `npm run build`: Build production bundle
-- `npm start`: Start production server
-- `npm run lint`: Run ESLint
-- `npm run dev:all`: Run all development services
-- `npm run inngest:dev`: Start Inngest development server
-- `npm run ngrok:dev`: Start ngrok tunnel
-
-## Roadmap
-
-### Planned Features
-- Additional trigger nodes for more platforms and services
-- More execution nodes and integrations
-- Enhanced workflow editor features
-- Workflow templates and marketplace
-- Team collaboration features
-- Production deployment and hosting
-
-### In Development
-- Expanding integration ecosystem
-- Performance optimizations
-- Enhanced error handling and debugging tools
-
-## Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/Bharat940/nodeweave/issues) if you want to contribute.
-
-To contribute:
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## Support
-
-For support, please contact Bharat Dangi at [bdangi450@gmail.com](mailto:bdangi450@gmail.com)
+<p align="center">
+  Distributed under the MIT License. Built with ❤️ by 
+  <strong>Bharat Dangi</strong> 
+  (<a href="mailto:bdangi450@gmail.com">bdangi450@gmail.com</a>).
+</p>

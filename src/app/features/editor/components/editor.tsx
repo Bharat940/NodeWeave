@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, type Node, type Edge, type NodeChange, type EdgeChange, type Connection, Background, Controls, MiniMap, Panel } from "@xyflow/react";
+import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, type Node, type Edge, type NodeChange, type EdgeChange, type Connection, Background, Controls, MiniMap, Panel, BackgroundVariant } from "@xyflow/react";
 import { ErrorView, LoadingView } from "@/components/entity-components";
 import { useSuspenseWorkflow } from "../../workflows/hooks/use-workflows";
 import { nodeComponents } from "@/config/node-components";
@@ -9,6 +9,7 @@ import { nodeComponents } from "@/config/node-components";
 import "@xyflow/react/dist/style.css";
 import { AddNodeButton } from "./add-node-button";
 import { useSetAtom } from "jotai";
+import { useTheme } from "next-themes";
 import { editorAtom } from "../store/atoms";
 import { NodeType } from "@/generated/prisma/browser";
 import { ExecuteflowButton } from "./execute-workflow-button";
@@ -23,6 +24,7 @@ export const EditorError = () => {
 
 export const Editor = ({ workflowId }: { workflowId: string }) => {
     const { data: workflow } = useSuspenseWorkflow(workflowId);
+    const { theme, resolvedTheme } = useTheme();
 
     const setEditor = useSetAtom(editorAtom);
 
@@ -62,10 +64,13 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
                 panOnScroll
                 panOnDrag={false}
                 selectionOnDrag
+                colorMode={resolvedTheme as "light" | "dark"}
             >
-                <Background />
+                <Background variant={BackgroundVariant.Dots} gap={20} />
                 <Controls />
-                <MiniMap />
+                <div className="hidden sm:block">
+                    <MiniMap zoomable pannable />
+                </div>
                 <Panel position="top-right">
                     <AddNodeButton />
                 </Panel>
@@ -78,4 +83,3 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
         </div>
     )
 }
-

@@ -15,10 +15,10 @@ export function BaseNode({
 }: BaseNodeProp) {
   return (
     <div
+      id="base-node"
       className={cn(
-        "bg-card text-card-foreground relative rounded-sm border border-muted-foreground hover:bg-accent",
-        "[.react-flow\\_\\_node.selected_&]:border-muted-foreground",
-        "[.react-flow\\_\\_node.selected_&]:shadow-lg",
+        "glass-card relative rounded-md border-border/50 text-card-foreground transition-all duration-300 hover:border-primary/50",
+        "[.react-flow\\_\\_node.selected_&]:border-primary",
         className,
       )}
       tabIndex={0}
@@ -26,16 +26,16 @@ export function BaseNode({
     >
       {props.children}
       {status === "error" && (
-        <XCircleIcon className="absolute right-0.5 bottom-0.5 size-2 text-red-700 stroke-3" />
+        <XCircleIcon className="absolute right-0.5 bottom-0.5 size-2 text-destructive stroke-3" />
       )}
       {status === "success" && (
-        <CheckCircle2Icon className="absolute right-0.5 bottom-0.5 size-2 text-green-700 stroke-3" />
+        <CheckCircle2Icon className="absolute right-0.5 bottom-0.5 size-2 text-emerald-500 stroke-3" />
       )}
       {status === "loading" && (
-        <Loader2Icon className="absolute -right-0.5 -bottom-0.5 size-2 text-blue-700 stroke-3 animate-spin" />
+        <Loader2Icon className="absolute -right-0.5 -bottom-0.5 size-2 text-blue-500 stroke-3 animate-spin" />
       )}
       {status === "sleeping" && (
-        <MoonIcon className="absolute right-0.5 bottom-0.5 size-2.5 text-amber-400 fill-amber-400" />
+        <MoonIcon className="absolute right-0.5 bottom-0.5 size-2.5 text-amber-500 fill-amber-500" />
       )}
     </div>
   );
@@ -73,7 +73,7 @@ export function BaseNodeHeaderTitle({
   return (
     <h3
       data-slot="base-node-title"
-      className={cn("user-select-none flex-1 font-semibold", className)}
+      className={cn("user-select-none flex-1 font-semibold truncate", className)}
       {...props}
     />
   );

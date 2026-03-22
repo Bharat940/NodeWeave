@@ -28,9 +28,9 @@ export const EditorActiveToggle = ({ workflowId }: { workflowId: string }) => {
     const updateStatus = useUpdateWorkflowStatus();
 
     return (
-        <div className="flex items-center gap-2 mr-2">
+        <div className="flex items-center gap-2">
             <span className={cn(
-                "text-sm text-muted-foreground font-medium flex items-center gap-1.5 transition-opacity",
+                "hidden sm:flex text-sm text-muted-foreground font-medium items-center gap-1.5 transition-opacity",
                 updateStatus.isPending && "opacity-70"
             )}>
                 {updateStatus.isPending && <Loader2 className="size-3.5 animate-spin text-blue-500" />}
@@ -68,7 +68,7 @@ export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
         <div className="ml-auto">
             <Button size="sm" onClick={handleSave} disabled={saveWorkflow.isPending}>
                 <SaveIcon className="size-4" />
-                Save
+                <span className="hidden sm:inline ml-2">Save</span>
             </Button>
         </div>
     )
@@ -139,7 +139,7 @@ export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
     }
 
     return (
-        <BreadcrumbItem onClick={() => setIsEditing(true)} className="cursor-pointer hover:text-foreground transition-colors">
+        <BreadcrumbItem onClick={() => setIsEditing(true)} className="cursor-pointer hover:text-foreground transition-colors max-w-[120px] sm:max-w-[200px] truncate">
             {workflow.name}
         </BreadcrumbItem>
     )
@@ -149,14 +149,14 @@ export const EditorBreadCrumbs = ({ workflowId }: { workflowId: string }) => {
     return (
         <Breadcrumb>
             <BreadcrumbList>
-                <BreadcrumbItem>
+                <BreadcrumbItem className="hidden sm:inline-flex">
                     <BreadcrumbLink asChild>
                         <Link prefetch href="/workflows">
                             Workflows
                         </Link>
                     </BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator />
+                <BreadcrumbSeparator className="hidden sm:inline-flex" />
                 <EditorNameInput workflowId={workflowId} />
             </BreadcrumbList>
         </Breadcrumb>
@@ -175,8 +175,8 @@ export const EditorPublishButton = ({ workflowId }: { workflowId: string }) => {
         <>
             <PublishDialog workflowId={workflowId} open={isOpen} onOpenChange={setIsOpen} />
             <Button variant="outline" size="sm" onClick={() => setIsOpen(true)}>
-                <ShareIcon className="size-4 mr-2" />
-                <span className="hidden sm:inline">Publish Template</span>
+                <ShareIcon className="size-4" />
+                <span className="hidden lg:inline ml-2">Publish Template</span>
             </Button>
         </>
     );
@@ -189,8 +189,8 @@ export const EditorApplyTemplateButton = () => {
         <>
             <EditorTemplateDialog open={isOpen} onOpenChange={setIsOpen} />
             <Button variant="outline" size="sm" onClick={() => setIsOpen(true)}>
-                <LayoutTemplate className="size-4 mr-2" />
-                <span className="hidden sm:inline">Apply Template</span>
+                <LayoutTemplate className="size-4" />
+                <span className="hidden lg:inline ml-2">Apply Template</span>
             </Button>
         </>
     );
