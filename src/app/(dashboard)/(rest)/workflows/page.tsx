@@ -25,11 +25,11 @@ const Page = async ({ searchParams }: Props) => {
     }
 
     return (
-        <HydrateClient>
-            <WorkflowsContainer>
+        <WorkflowsContainer>
+            <HydrateClient>
                 <WorkflowList />
-            </WorkflowsContainer>
-        </HydrateClient>
+            </HydrateClient>
+        </WorkflowsContainer>
     )
 };
 

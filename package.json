@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
+    "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint",
     "ngrok:dev": "ngrok http --url=urethroscopic-ryker-poetless.ngrok-free.dev 3000",
