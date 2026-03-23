@@ -5,6 +5,13 @@ import { TemplateList, TemplatesContainer } from "@/app/features/templates/compo
 import type { SearchParams } from "nuqs/server";
 import { templatesParamsLoader } from "@/app/features/templates/server/params-loader";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Templates | Gallery",
+    description: "Browse and deploy pre-built automation templates to accelerate your NodeWeave workflows.",
+};
+
 type Props = {
     searchParams: Promise<SearchParams>
 };

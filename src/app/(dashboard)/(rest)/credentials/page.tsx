@@ -1,4 +1,9 @@
-import { CredentialsContainer, CredentialsError, CredentialsList, CredentialsLoading } from "@/app/features/credentials/components/credentials";
+import { 
+  CredentialsContainer, 
+  CredentialsError, 
+  CredentialsList, 
+  CredentialsLoading 
+} from "@/app/features/credentials/components/credentials";
 import { credentialsParamsLoader } from "@/app/features/credentials/server/params-loader";
 import { prefetchCredentials } from "@/app/features/credentials/server/prefetch";
 import { requireAuth } from "@/lib/auth-utils";
@@ -6,11 +11,16 @@ import { HydrateClient } from "@/trpc/server";
 import { SearchParams } from "nuqs";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Credentials | Dashboard",
+    description: "Securely manage your automation credentials and secrets in NodeWeave.",
+};
 
 type Props = {
     searchParams: Promise<SearchParams>;
-
-}
+};
 
 const Page = async ({ searchParams }: Props) => {
     await requireAuth();

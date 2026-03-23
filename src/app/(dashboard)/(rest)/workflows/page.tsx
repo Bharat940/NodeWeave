@@ -2,8 +2,14 @@ import { requireAuth } from "@/lib/auth-utils";
 import { prefetchUsage, prefetchWorkflows } from "../../../features/workflows/server/prefetch";
 import { HydrateClient } from "../../../../trpc/server";
 import { WorkflowList, WorkflowsContainer } from "@/app/features/workflows/components/workflows";
+import type { Metadata } from "next";
 import type { SearchParams } from "nuqs/server";
 import { workflowsParamsLoader } from "@/app/features/workflows/server/params-loader";
+
+export const metadata: Metadata = {
+    title: "Workflows | Dashboard",
+    description: "Manage and monitor your automated workflows in the NodeWeave dashboard.",
+};
 
 type Props = {
     searchParams: Promise<SearchParams>
