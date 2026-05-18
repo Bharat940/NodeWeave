@@ -38,26 +38,41 @@ export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
 
 export const premiumProcedure = protectedProcedure.use(
   async ({ ctx, next }) => {
-    const customer = await polarClient.customers.getStateExternal({
-      externalId: ctx.auth.user.id,
-    });
+    try {
+      const customer = await polarClient.customers.getStateExternal({
+        externalId: ctx.auth.user.id,
+      });
 
-    if (!customer.activeSubscriptions || customer.activeSubscriptions.length === 0) {
-      throw new TRPCError({ code: "FORBIDDEN", message: "Active subscription required" });
+      if (!customer.activeSubscriptions || customer.activeSubscriptions.length === 0) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Active subscription required" });
+      }
+
+      return next({ ctx: { ...ctx, customer } });
+    } catch (error) {
+      if (error instanceof TRPCError) throw error;
+      console.error("[Premium Procedure] Polar subscription check failed:", error);
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Active subscription check failed or Polar is unreachable."
+      });
     }
-
-    return next({ ctx: { ...ctx, customer } });
   }
 )
 
 export const workflowLimitedProcedure = protectedProcedure.use(
   async ({ ctx, next }) => {
-    const customer = await polarClient.customers.getStateExternal({
-      externalId: ctx.auth.user.id,
-    });
+    let customer = null;
+    try {
+      customer = await polarClient.customers.getStateExternal({
+        externalId: ctx.auth.user.id,
+      });
+    } catch (error) {
+      console.error("[Workflow Limited Procedure] Polar customer check failed:", error);
+      // Fallback: treat as normal free tier user if Polar is unreachable or user is not synced yet
+    }
 
     // Premium users have unlimited workflows
-    if (customer.activeSubscriptions && customer.activeSubscriptions.length > 0) {
+    if (customer && customer.activeSubscriptions && customer.activeSubscriptions.length > 0) {
       return next({ ctx: { ...ctx, customer } });
     }
 
